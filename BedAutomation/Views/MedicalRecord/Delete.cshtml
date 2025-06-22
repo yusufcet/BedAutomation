@@ -1,0 +1,168 @@
+@model BedAutomation.Models.MedicalRecord
+
+@{
+    ViewData["Title"] = "Tıbbi Kayıt Sil";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="bi bi-exclamation-triangle me-2"></i>Tıbbi Kaydı Sil</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <h5 class="alert-heading">
+                            <i class="bi bi-shield-exclamation me-2"></i>Kritik Uyarı!
+                        </h5>
+                        <p class="mb-2">Bu tıbbi kaydı silmek üzeresiniz. Bu işlem geri alınamaz!</p>
+                        <hr>
+                        <p class="mb-0">
+                            <small>
+                                • Hasta tıbbi geçmişi kalıcı olarak silinecektir<br>
+                                • İlişkili tanılar ve tedavi planları kaybolacaktır<br>
+                                • Yasal ve tıbbi sorumluluk açısından risklidir<br>
+                                • Bu işlem sadece kritik durumlarda yapılmalıdır
+                            </small>
+                        </p>
+                    </div>
+
+                    <!-- Tıbbi Kayıt Bilgileri -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Silinecek Tıbbi Kayıt Bilgileri</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <strong>Hasta:</strong><br>
+                                    <i class="bi bi-person me-1 text-primary"></i>
+                                    @Html.DisplayFor(model => model.Patient.FullName)
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Doktor:</strong><br>
+                                    <i class="bi bi-person-badge me-1 text-info"></i>
+                                    @Html.DisplayFor(model => model.Doctor.FullName)
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Kayıt Türü:</strong><br>
+                                    <i class="bi bi-tag me-1 text-success"></i>
+                                    @Model.RecordType
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Durum:</strong><br>
+                                    @{
+                                        var statusClass = Model.Status switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Closed" => "bg-secondary",
+                                            "Pending" => "bg-warning",
+                                            _ => "bg-info"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@Model.Status</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Kayıt Tarihi:</strong><br>
+                                    <i class="bi bi-calendar me-1 text-primary"></i>
+                                    @Model.RecordDate.ToString("dd.MM.yyyy HH:mm")
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Öncelik:</strong><br>
+                                    @{
+                                        var priorityClass = Model.Priority switch
+                                        {
+                                            "Low" => "bg-info",
+                                            "Normal" => "bg-secondary",
+                                            "High" => "bg-warning",
+                                            "Critical" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @priorityClass">@Model.Priority</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.ChiefComplaint))
+                                {
+                                    <div class="col-md-12">
+                                        <strong>Ana Şikayet:</strong><br>
+                                        <div class="p-2 bg-white rounded border">
+                                            @Model.ChiefComplaint
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.Assessment))
+                                {
+                                    <div class="col-md-12">
+                                        <strong>Değerlendirme:</strong><br>
+                                        <div class="p-2 bg-white rounded border">
+                                            @Model.Assessment
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- İlişkili Veriler -->
+                            @if (Model.Diagnoses?.Any() == true || Model.TreatmentPlans?.Any() == true)
+                            {
+                                <div class="mt-3">
+                                    <div class="alert alert-warning">
+                                        <h6><i class="bi bi-exclamation-circle me-2"></i>Bu kayıtla birlikte silinecek veriler:</h6>
+                                        <ul class="mb-0">
+                                            @if (Model.Diagnoses?.Any() == true)
+                                            {
+                                                <li><strong>@Model.Diagnoses.Count adet tanı kaydı</strong></li>
+                                            }
+                                            @if (Model.TreatmentPlans?.Any() == true)
+                                            {
+                                                <li><strong>@Model.TreatmentPlans.Count adet tedavi planı</strong></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Onay Formu -->
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <h6 class="text-danger mb-3">Bu kritik tıbbi kaydı silmek istediğinizden emin misiniz?</h6>
+                                
+                                <button type="submit" class="btn btn-danger btn-lg me-3" onclick="return confirm('Bu işlem geri alınamaz! Emin misiniz?')">
+                                    <i class="bi bi-trash me-2"></i>Evet, Kalıcı Olarak Sil
+                                </button>
+                                
+                                <a asp-action="Index" class="btn btn-secondary btn-lg me-2">
+                                    <i class="bi bi-x-circle me-2"></i>Hayır, İptal Et
+                                </a>
+                                
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-eye me-2"></i>Detayları Gör
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card.border-danger {
+        border-width: 2px;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .alert-danger {
+        border-left: 4px solid #dc3545;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #ffc107;
+    }
+</style>

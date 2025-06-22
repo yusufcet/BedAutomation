@@ -1,0 +1,219 @@
+@model BedAutomation.Models.Room
+
+@{
+    ViewData["Title"] = "Room Details";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-door-open"></i> Room Details</h1>
+                    <p class="mb-0">View room information and associated beds</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-lg me-2">
+                        <i class="fas fa-edit"></i> Edit Room
+                    </a>
+                    <a asp-action="Index" class="btn btn-light btn-lg">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-info-circle"></i> Room Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-door-open"></i> Room Number
+                            </label>
+                            <div class="form-control-plaintext fw-bold h5">@Model.RoomNumber</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-hospital"></i> Room Type
+                            </label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-info fs-6">@Model.RoomType</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-stethoscope"></i> Department
+                            </label>
+                            <div class="form-control-plaintext">@Model.Department</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-building"></i> Floor
+                            </label>
+                            <div class="form-control-plaintext">
+                                @if (Model.Floor == 0)
+                                {
+                                    <text>Ground Floor</text>
+                                }
+                                else
+                                {
+                                    <text>@Model.Floor@(Model.Floor == 1 ? "st" : Model.Floor == 2 ? "nd" : Model.Floor == 3 ? "rd" : "th") Floor</text>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-bed"></i> Bed Capacity
+                            </label>
+                            <div class="form-control-plaintext">
+                                <span class="badge bg-secondary fs-6">@Model.BedCapacity beds</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-check-circle"></i> Status
+                            </label>
+                            <div class="form-control-plaintext">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success fs-6">
+                                        <i class="fas fa-check"></i> Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger fs-6">
+                                        <i class="fas fa-times"></i> Inactive
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label text-muted">
+                                    <i class="fas fa-info-circle"></i> Description
+                                </label>
+                                <div class="form-control-plaintext">@Model.Description</div>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted">
+                                <i class="fas fa-calendar-alt"></i> Created At
+                            </label>
+                            <div class="form-control-plaintext">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-bed"></i> Room Beds (@Model.Beds.Count of @Model.BedCapacity)
+                        </h5>
+                        @if (Model.Beds.Count < Model.BedCapacity)
+                        {
+                            <span class="badge bg-warning">
+                                @(Model.BedCapacity - Model.Beds.Count) beds missing
+                            </span>
+                        }
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Beds.Any())
+                        {
+                            <div class="row">
+                                @foreach (var bed in Model.Beds)
+                                {
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="card bed-card @(bed.IsOccupied ? "border-danger" : bed.IsMaintenanceRequired ? "border-warning" : "border-success")">
+                                            <div class="card-body text-center">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-bed"></i> @bed.BedNumber
+                                                </h6>
+                                                <p class="card-text">@bed.BedType</p>
+                                                
+                                                @if (bed.IsOccupied)
+                                                {
+                                                    <span class="badge bg-danger mb-2">
+                                                        <i class="fas fa-user"></i> Occupied
+                                                    </span>
+                                                }
+                                                else if (bed.IsMaintenanceRequired)
+                                                {
+                                                    <span class="badge bg-warning mb-2">
+                                                        <i class="fas fa-tools"></i> Maintenance
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success mb-2">
+                                                        <i class="fas fa-check"></i> Available
+                                                    </span>
+                                                }
+
+                                                @if (!bed.IsActive)
+                                                {
+                                                    <br><span class="badge bg-secondary">
+                                                        <i class="fas fa-pause"></i> Inactive
+                                                    </span>
+                                                }
+
+                                                @if (bed.Reservations != null && bed.Reservations.Any(r => r.Status == "Confirmed" || r.Status == "Active"))
+                                                {
+                                                    <div class="mt-2">
+                                                        @{
+                                                            var activeReservation = bed.Reservations.FirstOrDefault(r => r.Status == "Confirmed" || r.Status == "Active");
+                                                        }
+                                                        <small class="text-muted">
+                                                            Patient: @activeReservation?.Patient?.FirstName @activeReservation?.Patient?.LastName
+                                                        </small>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center py-4">
+                                <i class="fas fa-bed fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No beds found</h5>
+                                <p class="text-muted">This room doesn't have any beds configured yet.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bed-card {
+    transition: all 0.3s ease;
+}
+
+.bed-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style> 

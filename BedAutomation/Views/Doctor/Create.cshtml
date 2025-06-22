@@ -1,0 +1,204 @@
+@model BedAutomation.Models.Doctor
+
+@{
+    ViewData["Title"] = "Add New Doctor";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus me-2 text-primary"></i>Add New Doctor
+                    </h4>
+                    <p class="text-muted mb-0">Enter doctor information and medical credentials</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <!-- Personal Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="bi bi-person me-2"></i>Personal Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter first name">
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter last name">
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IdentityNumber" class="form-label">Identity Number <span class="text-danger">*</span></label>
+                                <input asp-for="IdentityNumber" class="form-control" placeholder="11-digit identity number" maxlength="11">
+                                <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LicenseNumber" class="form-label">Medical License Number <span class="text-danger">*</span></label>
+                                <input asp-for="LicenseNumber" class="form-control" placeholder="Enter license number">
+                                <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="bi bi-telephone me-2"></i>Contact Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="doctor@hospital.com">
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input asp-for="PhoneNumber" type="tel" class="form-control" placeholder="+1 (555) 123-4567">
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="bi bi-briefcase me-2"></i>Professional Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Specialization" class="form-label">Specialization <span class="text-danger">*</span></label>
+                                <select asp-for="Specialization" class="form-select">
+                                    <option value="">Select Specialization</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Surgery">Surgery</option>
+                                    <option value="Internal Medicine">Internal Medicine</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Anesthesiology">Anesthesiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Oncology">Oncology</option>
+                                    <option value="Ophthalmology">Ophthalmology</option>
+                                    <option value="Otolaryngology">Otolaryngology</option>
+                                    <option value="Urology">Urology</option>
+                                    <option value="Gastroenterology">Gastroenterology</option>
+                                    <option value="Pulmonology">Pulmonology</option>
+                                    <option value="Endocrinology">Endocrinology</option>
+                                    <option value="Rheumatology">Rheumatology</option>
+                                    <option value="Pathology">Pathology</option>
+                                </select>
+                                <span asp-validation-for="Specialization" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="YearsOfExperience" class="form-label">Years of Experience <span class="text-danger">*</span></label>
+                                <input asp-for="YearsOfExperience" type="number" min="1" max="50" class="form-control" placeholder="Enter years of experience">
+                                <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information Section -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="border-bottom pb-2 mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>Additional Information
+                                </h5>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label asp-for="Biography" class="form-label">Biography</label>
+                                <textarea asp-for="Biography" class="form-control" rows="4" placeholder="Brief biography, education, achievements, etc. (optional)"></textarea>
+                                <span asp-validation-for="Biography" class="text-danger"></span>
+                                <div class="form-text">Maximum 500 characters</div>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <div class="form-check">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                                    <label asp-for="IsActive" class="form-check-label">
+                                        Active Status
+                                    </label>
+                                    <div class="form-text">Check if the doctor is currently active and can be assigned to patients</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Index" class="btn btn-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>Back to List
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-secondary me-2">
+                                            <i class="bi bi-x-circle me-1"></i>Reset Form
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-circle me-1"></i>Create Doctor
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Identity number validation
+        document.getElementById('IdentityNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Phone number formatting
+        document.getElementById('PhoneNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 6) {
+                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+            } else if (value.length >= 3) {
+                value = value.replace(/(\d{3})(\d{1,3})/, '($1) $2');
+            }
+            e.target.value = value;
+        });
+
+        // Biography character count
+        const biographyTextarea = document.getElementById('Biography');
+        const maxLength = 500;
+        
+        if (biographyTextarea) {
+            const countDiv = document.createElement('div');
+            countDiv.className = 'form-text text-end';
+            countDiv.innerHTML = `<span id="bioCount">0</span>/${maxLength} characters`;
+            biographyTextarea.parentNode.appendChild(countDiv);
+            
+            biographyTextarea.addEventListener('input', function() {
+                const count = this.value.length;
+                document.getElementById('bioCount').textContent = count;
+                
+                if (count > maxLength) {
+                    countDiv.className = 'form-text text-end text-danger';
+                } else if (count > maxLength * 0.8) {
+                    countDiv.className = 'form-text text-end text-warning';
+                } else {
+                    countDiv.className = 'form-text text-end';
+                }
+            });
+        }
+    </script>
+} 

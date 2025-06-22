@@ -1,0 +1,209 @@
+@model BedAutomation.Models.Prescription
+
+@{
+    ViewData["Title"] = "Prescription Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-prescription2 me-2"></i>Prescription Details</h4>
+                    <div>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Doctor"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-list me-1"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Reçete Numarası -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Prescription Number</label>
+                                <div class="info-value">
+                                    <i class="bi bi-hash me-2 text-primary"></i>
+                                    <strong>@Model.PrescriptionNumber</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Durum -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Status</label>
+                                <div class="info-value">
+                                    @{
+                                        var statusClass = Model.Status switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Completed" => "bg-info",
+                                            "Cancelled" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@Model.Status</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hasta -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Patient</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person me-2 text-primary"></i>
+                                    @Html.DisplayFor(model => model.Patient.FullName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doktor -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Doctor</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person-badge me-2 text-info"></i>
+                                    @Html.DisplayFor(model => model.Doctor.FullName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reçete Tarihi -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Prescription Date</label>
+                                <div class="info-value">
+                                    <i class="bi bi-calendar me-2 text-primary"></i>
+                                    @Model.PrescriptionDate.ToString("dd.MM.yyyy HH:mm")
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Son Kullanma Tarihi -->
+                        @if (Model.ExpiryDate.HasValue)
+                        {
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <label class="info-label">Expiry Date</label>
+                                    <div class="info-value">
+                                        <i class="bi bi-calendar-x me-2 text-warning"></i>
+                                        @Model.ExpiryDate.Value.ToString("dd.MM.yyyy")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Tanı -->
+                        @if (!string.IsNullOrEmpty(Model.Diagnosis))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Diagnosis</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.Diagnosis
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Talimatlar -->
+                        @if (!string.IsNullOrEmpty(Model.Instructions))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Instructions</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-info bg-opacity-10 rounded">
+                                            @Model.Instructions
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Notlar -->
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Notes</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.Notes
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- İlaçlar Tablosu -->
+                    @if (Model.PrescriptionMedications?.Any() == true)
+                    {
+                        <div class="mt-4">
+                            <h5><i class="bi bi-capsule me-2"></i>Prescribed Medications</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Medication</th>
+                                            <th>Dosage</th>
+                                            <th>Frequency</th>
+                                            <th>Duration</th>
+                                            <th>Quantity</th>
+                                            <th>Instructions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var med in Model.PrescriptionMedications)
+                                        {
+                                            <tr>
+                                                <td>@med.Medication.Name</td>
+                                                <td>@med.Dosage</td>
+                                                <td>@med.Frequency</td>
+                                                <td>@med.Duration days</td>
+                                                <td>@med.Quantity</td>
+                                                <td>@med.Instructions</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-group {
+        margin-bottom: 1rem;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+    .info-value {
+        font-size: 1rem;
+        color: #212529;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+</style>

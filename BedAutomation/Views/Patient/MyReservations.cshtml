@@ -1,0 +1,131 @@
+@model IEnumerable<BedAutomation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "My Reservations";
+    var patient = ViewBag.Patient as BedAutomation.Models.Patient;
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="welcome-card mb-4">
+    <h2>Welcome, @patient.FirstName @patient.LastName</h2>
+    <p class="text-muted">Manage your hospital reservations</p>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stats-card bg-primary text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count()</h4>
+                <p>Total Reservations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card bg-success text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count(r => r.Status == "Active")</h4>
+                <p>Active</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card bg-warning text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count(r => r.Status == "Reserved")</h4>
+                <p>Reserved</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card bg-info text-white">
+            <div class="card-body text-center">
+                <h4>@Model.Count(r => r.Status == "Completed")</h4>
+                <p>Completed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">My Reservations</h5>
+        @{
+            var hasActiveReservation = Model.Any(r => r.Status == "Reserved" || r.Status == "Active");
+        }
+        @if (hasActiveReservation)
+        {
+            <button class="btn btn-secondary" disabled title="Your active reservation is present">
+                <i class="bi bi-exclamation-triangle me-1"></i> Active Reservation
+            </button>
+        }
+        else
+        {
+            <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> New Reservation
+            </a>
+        }
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Bed</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reservation in Model)
+                        {
+                            <tr>
+                                <td>@reservation.Bed.Room.RoomNumber</td>
+                                <td>@reservation.Bed.BedNumber</td>
+                                <td>@reservation.CheckInDate.ToString("dd/MM/yyyy")</td>
+                                <td>@(reservation.CheckOutDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td>
+                                    <span class="badge bg-success">@reservation.Status</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">@reservation.Priority</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No reservations found</h4>
+                <a asp-controller="Reservation" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Create Your First Reservation
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+.welcome-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+</style> 

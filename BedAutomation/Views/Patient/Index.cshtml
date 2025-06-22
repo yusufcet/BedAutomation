@@ -1,0 +1,184 @@
+@model IEnumerable<BedAutomation.Models.Patient>
+
+@{
+    ViewData["Title"] = "Patients Management";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-users"></i> Patients Management</h1>
+                    <p class="mb-0">Manage hospital patient records</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-user-plus"></i> Add New Patient
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count()</h4>
+                                <p class="card-text">Total Patients</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Sum(p => p.Reservations.Count)</h4>
+                                <p class="card-text">Total Reservations</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-calendar-check fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(p => p.Reservations.Any(r => r.Status == "Active"))</h4>
+                                <p class="card-text">Active Patients</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-bed fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(p => p.CreatedAt.Date == DateTime.Today)</h4>
+                                <p class="card-text">New Today</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-user-plus fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-list"></i> Patient List</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user"></i> Name</th>
+                                    <th><i class="fas fa-id-card"></i> ID Number</th>
+                                    <th><i class="fas fa-phone"></i> Phone</th>
+                                    <th><i class="fas fa-envelope"></i> Email</th>
+                                    <th><i class="fas fa-calendar"></i> Age</th>
+                                    <th><i class="fas fa-venus-mars"></i> Gender</th>
+                                    <th><i class="fas fa-bed"></i> Status</th>
+                                    <th><i class="fas fa-cogs"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var patient in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@patient.FirstName @patient.LastName</strong>
+                                        </td>
+                                        <td>@patient.IdentityNumber</td>
+                                        <td>
+                                            <i class="fas fa-phone text-muted"></i> @patient.PhoneNumber
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-envelope text-muted"></i> @patient.Email
+                                        </td>
+                                        <td>@((DateTime.Now - patient.DateOfBirth).Days / 365) years</td>
+                                        <td>
+                                            <i class="fas fa-@(patient.Gender.ToLower() == "male" ? "mars" : "venus") text-muted"></i>
+                                            @patient.Gender
+                                        </td>
+                                        <td>
+                                            @{
+                                                var activeReservation = patient.Reservations.FirstOrDefault(r => r.Status == "Active");
+                                            }
+                                            @if (activeReservation != null)
+                                            {
+                                                <span class="badge status-active">
+                                                    <i class="fas fa-bed"></i> Active
+                                                </span>
+                                            }
+                                            else if (patient.Reservations.Any(r => r.Status == "Reserved"))
+                                            {
+                                                <span class="badge status-reserved">
+                                                    <i class="fas fa-clock"></i> Reserved
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-user"></i> Available
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a asp-action="Details" asp-route-id="@patient.Id" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@patient.Id" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No patients found</h4>
+                        <p class="text-muted">Start by adding a new patient to the system.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Add First Patient
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

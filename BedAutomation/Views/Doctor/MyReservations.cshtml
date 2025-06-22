@@ -1,0 +1,308 @@
+@model IEnumerable<BedAutomation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "My Patients";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="bi bi-people me-2 text-primary"></i>My Patients
+                        </h4>
+                        <p class="text-muted mb-0">Manage your assigned patients and reservations</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a asp-action="MyProfile" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-person-circle me-1"></i>My Profile
+                        </a>
+                        <a asp-controller="Reservation" asp-action="Calendar" class="btn btn-primary btn-sm">
+                            <i class="bi bi-calendar-event me-1"></i>Calendar View
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people fs-1 mb-2"></i>
+                    <h4 class="mb-0">@Model.Count()</h4>
+                    <small>Total Patients</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle fs-1 mb-2"></i>
+                    <h4 class="mb-0">@Model.Count(r => r.Status == "Active")</h4>
+                    <small>Active Cases</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-clock fs-1 mb-2"></i>
+                    <h4 class="mb-0">@Model.Count(r => r.Status == "Reserved")</h4>
+                    <small>Reserved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle fs-1 mb-2"></i>
+                    <h4 class="mb-0">@Model.Count(r => r.Priority == "Emergency")</h4>
+                    <small>Emergency Cases</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Status Filter</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Reserved">Reserved</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Priority Filter</label>
+                            <select class="form-select" id="priorityFilter">
+                                <option value="">All Priorities</option>
+                                <option value="Emergency">Emergency</option>
+                                <option value="High">High</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Search Patient</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search by patient name or ID...">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                <i class="bi bi-arrow-clockwise me-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table me-2"></i>Patient List
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="patientsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Room & Bed</th>
+                                        <th>Check-in Date</th>
+                                        <th>Check-out Date</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Admission Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reservation in Model.OrderByDescending(r => r.CreatedAt))
+                                    {
+                                        <tr data-status="@reservation.Status" data-priority="@reservation.Priority">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary rounded-circle p-2 me-3">
+                                                        <i class="bi bi-person text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">@reservation.Patient.FirstName @reservation.Patient.LastName</div>
+                                                        <small class="text-muted">ID: @reservation.Patient.IdentityNumber</small>
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            <i class="bi bi-telephone me-1"></i>@reservation.Patient.PhoneNumber
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">Room @reservation.Bed.Room.RoomNumber</div>
+                                                <small class="text-muted">Bed @reservation.Bed.BedNumber</small>
+                                                <br>
+                                                <small class="text-muted">@reservation.Bed.Room.Department</small>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">@reservation.CheckInDate.ToString("MMM dd, yyyy")</div>
+                                                <small class="text-muted">@reservation.CheckInDate.ToString("HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                @if (reservation.CheckOutDate.HasValue)
+                                                {
+                                                    <div class="fw-bold">@reservation.CheckOutDate.Value.ToString("MMM dd, yyyy")</div>
+                                                    <small class="text-muted">@reservation.CheckOutDate.Value.ToString("HH:mm")</small>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not set</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (reservation.Status)
+                                                {
+                                                    case "Active":
+                                                        <span class="badge bg-success">Active</span>
+                                                        break;
+                                                    case "Reserved":
+                                                        <span class="badge bg-primary">Reserved</span>
+                                                        break;
+                                                    case "Completed":
+                                                        <span class="badge bg-secondary">Completed</span>
+                                                        break;
+                                                    case "Cancelled":
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-light text-dark">@reservation.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (reservation.Priority)
+                                                {
+                                                    case "Emergency":
+                                                        <span class="badge bg-danger">Emergency</span>
+                                                        break;
+                                                    case "High":
+                                                        <span class="badge bg-warning">High</span>
+                                                        break;
+                                                    case "Normal":
+                                                        <span class="badge bg-info">Normal</span>
+                                                        break;
+                                                    case "Low":
+                                                        <span class="badge bg-secondary">Low</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-light text-dark">@reservation.Priority</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-outline-primary">@reservation.AdmissionType</span>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.Id" 
+                                                       class="btn btn-sm btn-outline-primary" title="View Details">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                    @if (reservation.Status == "Active" || reservation.Status == "Reserved")
+                                                    {
+                                                        <a asp-controller="Reservation" asp-action="Edit" asp-route-id="@reservation.Id" 
+                                                           class="btn btn-sm btn-outline-warning" title="Edit">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-people fs-1 text-muted mb-3"></i>
+                            <h5 class="text-muted">No Patients Assigned</h5>
+                            <p class="text-muted">You don't have any patients assigned to you yet.</p>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                                <i class="bi bi-house me-1"></i>Go to Dashboard
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Filter functionality
+        function filterTable() {
+            const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+            const priorityFilter = document.getElementById('priorityFilter').value.toLowerCase();
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const table = document.getElementById('patientsTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const status = row.getAttribute('data-status').toLowerCase();
+                const priority = row.getAttribute('data-priority').toLowerCase();
+                const patientName = row.cells[0].textContent.toLowerCase();
+                
+                let showRow = true;
+                
+                // Status filter
+                if (statusFilter && status !== statusFilter) {
+                    showRow = false;
+                }
+                
+                // Priority filter
+                if (priorityFilter && priority !== priorityFilter) {
+                    showRow = false;
+                }
+                
+                // Search filter
+                if (searchInput && !patientName.includes(searchInput)) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('priorityFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            filterTable();
+        }
+
+        // Event listeners
+        document.getElementById('statusFilter').addEventListener('change', filterTable);
+        document.getElementById('priorityFilter').addEventListener('change', filterTable);
+        document.getElementById('searchInput').addEventListener('input', filterTable);
+    </script>
+} 

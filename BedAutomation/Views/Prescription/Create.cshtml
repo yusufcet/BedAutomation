@@ -1,0 +1,147 @@
+@model BedAutomation.Models.Prescription
+
+@{
+    ViewData["Title"] = "New Prescription";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-pills me-2"></i>Write New Prescription</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" id="prescriptionForm">
+                        <div class="row g-3">
+                            <!-- Prescription Number (Auto-generated) -->
+                            <div class="col-md-6">
+                                <label asp-for="PrescriptionNumber" class="form-label">Prescription Number</label>
+                                <input asp-for="PrescriptionNumber" class="form-control" readonly />
+                                <small class="form-text text-muted">Auto-generated</small>
+                            </div>
+
+                            <!-- Prescription Date -->
+                            <div class="col-md-6">
+                                <label asp-for="PrescriptionDate" class="form-label">Prescription Date *</label>
+                                <input asp-for="PrescriptionDate" type="datetime-local" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="PrescriptionDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label">Patient *</label>
+                                <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                    <option value="">Select a patient...</option>
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.Doctors">
+                                    <option value="">Select a doctor...</option>
+                                </select>
+                                <span asp-validation-for="DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusList">
+                                    <option value="">Select status...</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Expiry Date -->
+                            <div class="col-md-6">
+                                <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                                <input asp-for="ExpiryDate" type="date" class="form-control" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                <small class="form-text text-muted">When this prescription expires</small>
+                            </div>
+
+                            <!-- Diagnosis -->
+                            <div class="col-md-12">
+                                <label asp-for="Diagnosis" class="form-label">Diagnosis</label>
+                                <textarea asp-for="Diagnosis" class="form-control" rows="3" placeholder="Primary diagnosis for this prescription..."></textarea>
+                                <span asp-validation-for="Diagnosis" class="text-danger"></span>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="col-md-12">
+                                <label asp-for="Instructions" class="form-label">General Instructions</label>
+                                <textarea asp-for="Instructions" class="form-control" rows="3" placeholder="General instructions for the patient..."></textarea>
+                                <span asp-validation-for="Instructions" class="text-danger"></span>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Create Prescription
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Card -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle text-info me-3 fa-2x"></i>
+                        <div>
+                            <h6 class="mb-1">Next Step: Add Medications</h6>
+                            <p class="mb-0 text-muted">After creating the prescription, you'll be redirected to add specific medications and dosage instructions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Set default prescription date and auto-generate expiry date
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const isoString = now.toISOString().slice(0, 16);
+            
+            if (!document.getElementById('PrescriptionDate').value) {
+                document.getElementById('PrescriptionDate').value = isoString;
+            }
+            
+            // Set default expiry date to 30 days from now
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            const expiryIsoString = expiryDate.toISOString().slice(0, 10);
+            
+            if (!document.getElementById('ExpiryDate').value) {
+                document.getElementById('ExpiryDate').value = expiryIsoString;
+            }
+        });
+
+        // Auto-select current doctor if they are a doctor role
+        @if (User.IsInRole("Doctor"))
+        {
+            <text>
+            // Try to auto-select current doctor (would need to be implemented in controller)
+            </text>
+        }
+    </script>
+} 

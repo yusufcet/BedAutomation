@@ -1,0 +1,134 @@
+@model BedAutomation.Models.Prescription
+
+@{
+    ViewData["Title"] = "Edit Prescription";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-pills me-2"></i>Edit Prescription</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" id="prescriptionForm">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="row g-3">
+                            <!-- Prescription Number (Read-only) -->
+                            <div class="col-md-6">
+                                <label asp-for="PrescriptionNumber" class="form-label">Prescription Number</label>
+                                <input asp-for="PrescriptionNumber" class="form-control" readonly />
+                            </div>
+
+                            <!-- Prescription Date -->
+                            <div class="col-md-6">
+                                <label asp-for="PrescriptionDate" class="form-label">Prescription Date *</label>
+                                <input asp-for="PrescriptionDate" type="datetime-local" class="form-control" value="@Model.PrescriptionDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="PrescriptionDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label">Patient *</label>
+                                <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                    <option value="">Select a patient...</option>
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.Doctors">
+                                    <option value="">Select a doctor...</option>
+                                </select>
+                                <span asp-validation-for="DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusList">
+                                    <option value="">Select status...</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Expiry Date -->
+                            <div class="col-md-6">
+                                <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                                <input asp-for="ExpiryDate" type="date" class="form-control" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Dispensed Status -->
+                            <div class="col-md-6">
+                                <div class="form-check mt-4">
+                                    <input asp-for="IsDispensed" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsDispensed" class="form-check-label">
+                                        Dispensed
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Dispensed Date -->
+                            <div class="col-md-6">
+                                <label asp-for="DispensedDate" class="form-label">Dispensed Date</label>
+                                <input asp-for="DispensedDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="DispensedDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Diagnosis -->
+                            <div class="col-md-12">
+                                <label asp-for="Diagnosis" class="form-label">Diagnosis</label>
+                                <textarea asp-for="Diagnosis" class="form-control" rows="3" placeholder="Primary diagnosis for this prescription..."></textarea>
+                                <span asp-validation-for="Diagnosis" class="text-danger"></span>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="col-md-12">
+                                <label asp-for="Instructions" class="form-label">General Instructions</label>
+                                <textarea asp-for="Instructions" class="form-control" rows="3" placeholder="General instructions for the patient..."></textarea>
+                                <span asp-validation-for="Instructions" class="text-danger"></span>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Additional notes..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <div>
+                                <a asp-action="ManageMedications" asp-route-id="@Model.Id" class="btn btn-success me-2">
+                                    <i class="fas fa-pills me-1"></i>Manage Medications
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Prescription
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

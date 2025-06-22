@@ -1,0 +1,353 @@
+@model BedAutomation.Models.Reservation
+
+@{
+    ViewData["Title"] = "Reservation Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2><i class="fas fa-calendar-check me-2"></i>Reservation Details</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Dashboard</a></li>
+                            @if(User.IsInRole("Admin"))
+                            {
+                                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Reservation")">Reservations</a></li>
+                            }
+                            else
+                            {
+                                <li class="breadcrumb-item"><a href="@Url.Action("MyReservations", "Patient")">My Reservations</a></li>
+                            }
+                            <li class="breadcrumb-item active">Details</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    @{
+                        string statusClass = Model.Status switch
+                        {
+                            "Reserved" => "bg-info",
+                            "Active" => "bg-success",
+                            "Completed" => "bg-secondary",
+                            "Cancelled" => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @statusClass fs-6 px-3 py-2">
+                        <i class="fas fa-circle me-1"></i>@Model.Status
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Information Card -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Reservation Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Reservation ID</label>
+                                <div class="fw-bold">#@Model.Id.ToString("D6")</div>
+                            </div>
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Check-in Date</label>
+                                <div class="fw-bold">
+                                    <i class="fas fa-calendar-plus me-2 text-success"></i>
+                                    @Model.CheckInDate.ToString("dddd, MMMM dd, yyyy 'at' HH:mm")
+                                </div>
+                            </div>
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Check-out Date</label>
+                                <div class="fw-bold">
+                                    @if(Model.CheckOutDate.HasValue)
+                                    {
+                                        <i class="fas fa-calendar-minus me-2 text-danger"></i>
+                                        @Model.CheckOutDate.Value.ToString("dddd, MMMM dd, yyyy 'at' HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted"><i class="fas fa-clock me-2"></i>Not specified</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Priority</label>
+                                <div class="fw-bold">
+                                    @{
+                                        string priorityClass = Model.Priority switch
+                                        {
+                                            "Emergency" => "text-danger",
+                                            "High" => "text-warning",
+                                            "Normal" => "text-info",
+                                            "Low" => "text-secondary",
+                                            _ => "text-secondary"
+                                        };
+                                        string priorityIcon = Model.Priority switch
+                                        {
+                                            "Emergency" => "fas fa-exclamation-triangle",
+                                            "High" => "fas fa-exclamation-circle",
+                                            "Normal" => "fas fa-info-circle",
+                                            "Low" => "fas fa-circle",
+                                            _ => "fas fa-circle"
+                                        };
+                                    }
+                                    <i class="@priorityIcon me-2 @priorityClass"></i>
+                                    <span class="@priorityClass">@Model.Priority</span>
+                                </div>
+                            </div>
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Admission Type</label>
+                                <div class="fw-bold">
+                                    @if(!string.IsNullOrEmpty(Model.AdmissionType))
+                                    {
+                                        <i class="fas fa-hospital-user me-2 text-primary"></i>@Model.AdmissionType
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted"><i class="fas fa-minus me-2"></i>Not specified</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="info-group mb-3">
+                                <label class="form-label text-muted small">Created</label>
+                                <div class="fw-bold">
+                                    <i class="fas fa-clock me-2 text-muted"></i>
+                                    @Model.CreatedAt.ToString("MMM dd, yyyy 'at' HH:mm")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Notes Card -->
+            @if(!string.IsNullOrEmpty(Model.MedicalNotes))
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Medical Notes</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="bg-light p-3 rounded">
+                            <p class="mb-0">@Model.MedicalNotes</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Cancellation Reason Card -->
+            @if(!string.IsNullOrEmpty(Model.CancellationReason))
+            {
+                <div class="card shadow-sm mb-4 border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-times-circle me-2"></i>Cancellation Reason</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger mb-0">
+                            <p class="mb-0">@Model.CancellationReason</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Patient and Room Information -->
+        <div class="col-lg-4">
+            <!-- Patient Information Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-injured me-2"></i>Patient Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="patient-avatar bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h6 class="fw-bold mb-1">@Model.Patient.FirstName @Model.Patient.LastName</h6>
+                        <p class="text-muted small mb-2">Patient ID: #@Model.Patient.Id.ToString("D6")</p>
+                    </div>
+                    <hr>
+                    <div class="info-group mb-2">
+                        <small class="text-muted">Email:</small>
+                        <div class="fw-semibold">@Model.Patient.Email</div>
+                    </div>
+                    <div class="info-group mb-2">
+                        <small class="text-muted">Phone:</small>
+                        <div class="fw-semibold">@Model.Patient.PhoneNumber</div>
+                    </div>
+                    <div class="info-group mb-2">
+                        <small class="text-muted">Date of Birth:</small>
+                        <div class="fw-semibold">@Model.Patient.DateOfBirth.ToString("MMM dd, yyyy")</div>
+                    </div>
+                    <div class="info-group">
+                        <small class="text-muted">Gender:</small>
+                        <div class="fw-semibold">@Model.Patient.Gender</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room and Bed Information Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-bed me-2"></i>Room & Bed Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-door-open fa-2x text-primary mb-2"></i>
+                                <div class="fw-bold">Room @Model.Bed.Room.RoomNumber</div>
+                                <small class="text-muted">@Model.Bed.Room.Department</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <i class="fas fa-bed fa-2x text-success mb-2"></i>
+                                <div class="fw-bold">Bed @Model.Bed.BedNumber</div>
+                                <small class="text-muted">@Model.Bed.BedType</small>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="info-group mb-2">
+                        <small class="text-muted">Floor:</small>
+                        <div class="fw-semibold">Floor @Model.Bed.Room.Floor</div>
+                    </div>
+                    <div class="info-group mb-2">
+                        <small class="text-muted">Room Capacity:</small>
+                        <div class="fw-semibold">@Model.Bed.Room.BedCapacity beds</div>
+                    </div>
+                    <div class="info-group">
+                        <small class="text-muted">Bed Status:</small>
+                        <div class="fw-semibold">
+                            @if(Model.Bed.IsOccupied)
+                            {
+                                <span class="badge bg-danger">Occupied</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons Card -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if(User.IsInRole("Admin"))
+                        {
+                            if(Model.Status == "Reserved")
+                            {
+                                <form asp-action="CheckOut" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-success w-100" onclick="return confirm('Are you sure you want to check in this patient?')">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Check In
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if(Model.Status == "Active")
+                            {
+                                <form asp-action="CheckOut" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-warning w-100" onclick="return confirm('Are you sure you want to check out this patient?')">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Check Out
+                                    </button>
+                                </form>
+                            }
+                            
+                            @if(Model.Status == "Reserved" || Model.Status == "Active")
+                            {
+                                <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                    <i class="fas fa-times me-2"></i>Cancel Reservation
+                                </button>
+                            }
+                            
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                        }
+                        
+                        <a href="@(User.IsInRole("Admin") ? Url.Action("Index", "Reservation") : Url.Action("MyReservations", "Patient"))" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>Cancel Reservation
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Cancel" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This action cannot be undone. The reservation will be cancelled and the bed will become available for other patients.
+                    </div>
+                    <div class="mb-3">
+                        <label for="cancellationReason" class="form-label">Cancellation Reason</label>
+                        <textarea class="form-control" id="cancellationReason" name="cancellationReason" rows="3" required placeholder="Please provide a reason for cancellation..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-check me-2"></i>Cancel Reservation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-group {
+    border-left: 3px solid var(--bs-primary);
+    padding-left: 12px;
+}
+
+.patient-avatar {
+    background: linear-gradient(135deg, #17a2b8, #007bff) !important;
+}
+
+.card {
+    border: none;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.badge {
+    font-size: 0.875em;
+}
+</style> 

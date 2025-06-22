@@ -1,0 +1,302 @@
+@model IEnumerable<BedAutomation.Models.MedicalRecord>
+
+@{
+    ViewData["Title"] = "My Medical Records";
+}
+
+<div class="container-fluid">
+    <!-- Patient Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="bi bi-person-circle me-2"></i>Patient Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> @ViewBag.Patient.FullName</p>
+                            <p><strong>Identity Number:</strong> @ViewBag.Patient.IdentityNumber</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Phone:</strong> @ViewBag.Patient.PhoneNumber</p>
+                            <p><strong>Email:</strong> @ViewBag.Patient.Email</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-card-primary">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-file-medical"></i>
+                        </div>
+                        <div>
+                            <h5 class="stat-number">@ViewBag.TotalRecords</h5>
+                            <p class="stat-label">Total Records</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-card-info">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-calendar-week"></i>
+                        </div>
+                        <div>
+                            <h5 class="stat-number">@ViewBag.RecentRecords</h5>
+                            <p class="stat-label">Last 30 Days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-card-warning">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-clipboard-data"></i>
+                        </div>
+                        <div>
+                            <h5 class="stat-number">@ViewBag.DiagnosisCount</h5>
+                            <p class="stat-label">Diagnoses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stat-card stat-card-success">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon">
+                            <i class="bi bi-heart-pulse"></i>
+                        </div>
+                        <div>
+                            <h5 class="stat-number">@ViewBag.TreatmentCount</h5>
+                            <p class="stat-label">Treatments</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Records List -->
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var record in Model)
+            {
+                <div class="col-12 mb-4">
+                    <div class="card medical-record-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-file-medical me-2 text-primary"></i>
+                                <strong>Medical Record - @record.RecordDate.ToString("MMM dd, yyyy")</strong>
+                            </div>
+                            <span class="badge @(record.RecordType == "Emergency" ? "bg-danger" : record.RecordType == "Routine" ? "bg-success" : "bg-info")">
+                                @record.RecordType
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Doctor:</strong></p>
+                                    <p class="text-muted">Dr. @record.Doctor.FirstName @record.Doctor.LastName</p>
+                                    <p class="mb-1"><strong>Specialization:</strong></p>
+                                    <p class="text-muted">@record.Doctor.Specialization</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1"><strong>Record Type:</strong></p>
+                                    <p class="text-muted">@record.RecordType</p>
+                                    <p class="mb-1"><strong>Status:</strong></p>
+                                    <span class="badge @(record.Status == "Active" ? "bg-success" : record.Status == "Completed" ? "bg-info" : "bg-secondary")">
+                                        @record.Status
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(record.ChiefComplaint))
+                            {
+                                <div class="mb-3">
+                                    <p class="mb-1"><strong>Chief Complaint:</strong></p>
+                                    <p class="text-muted">@record.ChiefComplaint</p>
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(record.PhysicalExamination))
+                            {
+                                <div class="mb-3">
+                                    <p class="mb-1"><strong>Physical Examination:</strong></p>
+                                    <p class="text-muted">@record.PhysicalExamination</p>
+                                </div>
+                            }
+
+                            @if (record.Diagnoses.Any())
+                            {
+                                <div class="diagnosis-section mb-3">
+                                    <h6 class="mb-2"><i class="bi bi-clipboard-data me-1"></i>Diagnoses:</h6>
+                                    <div class="row">
+                                        @foreach (var diagnosis in record.Diagnoses)
+                                        {
+                                            <div class="col-md-6 mb-2">
+                                                <div class="diagnosis-item">
+                                                                                                <strong>@diagnosis.ICDCode</strong> - @diagnosis.Description
+                                            @if (diagnosis.Type == "Primary")
+                                            {
+                                                <span class="badge bg-primary ms-1">Primary</span>
+                                            }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            @if (record.TreatmentPlans.Any())
+                            {
+                                <div class="treatment-section">
+                                    <h6 class="mb-2"><i class="bi bi-heart-pulse me-1"></i>Treatment Plans:</h6>
+                                    @foreach (var treatment in record.TreatmentPlans)
+                                    {
+                                        <div class="treatment-item mb-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <strong>@treatment.Title</strong>
+                                                <span class="badge @(treatment.Status == "Active" ? "bg-success" : treatment.Status == "Completed" ? "bg-info" : "bg-secondary")">
+                                                    @treatment.Status
+                                                </span>
+                                            </div>
+                                            <p class="text-muted mb-1">@treatment.Description</p>
+                                            <small class="text-muted">
+                                                Start: @treatment.StartDate.ToString("MMM dd, yyyy")
+                                                @if (treatment.EndDate.HasValue)
+                                                {
+                                                    <span> - End: @treatment.EndDate.Value.ToString("MMM dd, yyyy")</span>
+                                                }
+                                            </small>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(record.Notes))
+                            {
+                                <div class="notes-section mt-3">
+                                    <p class="mb-1"><strong>Notes:</strong></p>
+                                    <p class="text-muted">@record.Notes</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="text-center py-5">
+                    <i class="bi bi-file-medical" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+                    <h5 class="text-muted">No medical records found</h5>
+                    <p class="text-muted">You don't have any medical records yet.</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .stat-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.15s ease-in-out;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-card-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .stat-card-info {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #333;
+    }
+
+    .stat-card-warning {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        color: #333;
+    }
+
+    .stat-card-success {
+        background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        color: white;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-right: 1rem;
+        opacity: 0.8;
+    }
+
+    .stat-number {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+        opacity: 0.9;
+    }
+
+    .medical-record-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: transform 0.15s ease-in-out;
+    }
+
+    .medical-record-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .diagnosis-section, .treatment-section {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+    }
+
+    .diagnosis-item, .treatment-item {
+        background-color: white;
+        padding: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+    }
+
+    .notes-section {
+        background-color: #fffbf0;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #ffc107;
+    }
+</style> 

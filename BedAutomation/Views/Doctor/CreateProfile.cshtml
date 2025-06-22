@@ -1,0 +1,162 @@
+@model BedAutomation.Models.Doctor
+
+@{
+    ViewData["Title"] = "Create Doctor Profile";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus me-2"></i>Create Your Doctor Profile
+                    </h4>
+                    <p class="mb-0 mt-1 opacity-75">Complete your professional information to get started</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateProfile" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        
+                        <!-- Personal Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-person me-2"></i>Personal Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FirstName" class="form-label">First Name *</label>
+                                <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LastName" class="form-label">Last Name *</label>
+                                <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IdentityNumber" class="form-label">Identity Number *</label>
+                                <input asp-for="IdentityNumber" class="form-control" placeholder="11-digit identity number" maxlength="11" />
+                                <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label">Phone Number *</label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="e.g., +90 555 123 4567" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label asp-for="Email" class="form-label">Email Address *</label>
+                                <input asp-for="Email" class="form-control" placeholder="your.email@example.com" readonly />
+                                <small class="form-text text-muted">Email is taken from your account and cannot be changed here.</small>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-briefcase me-2"></i>Professional Information
+                                </h5>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="LicenseNumber" class="form-label">Medical License Number *</label>
+                                <input asp-for="LicenseNumber" class="form-control" placeholder="Enter your license number" />
+                                <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Specialization" class="form-label">Specialization *</label>
+                                <select asp-for="Specialization" class="form-select">
+                                    <option value="">Select your specialization</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Emergency Medicine">Emergency Medicine</option>
+                                    <option value="Endocrinology">Endocrinology</option>
+                                    <option value="Gastroenterology">Gastroenterology</option>
+                                    <option value="General Medicine">General Medicine</option>
+                                    <option value="General Surgery">General Surgery</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Neurosurgery">Neurosurgery</option>
+                                    <option value="Oncology">Oncology</option>
+                                    <option value="Ophthalmology">Ophthalmology</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Otolaryngology">Otolaryngology (ENT)</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="Radiology">Radiology</option>
+                                    <option value="Urology">Urology</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="Specialization" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="YearsOfExperience" class="form-label">Years of Experience</label>
+                                <input asp-for="YearsOfExperience" class="form-control" type="number" min="0" max="50" placeholder="e.g., 5" />
+                                <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Biography -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-file-text me-2"></i>Professional Biography
+                                </h5>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label asp-for="Biography" class="form-label">Biography</label>
+                                <textarea asp-for="Biography" class="form-control" rows="4" 
+                                         placeholder="Brief description of your professional background, achievements, and areas of expertise..."></textarea>
+                                <small class="form-text text-muted">This information will be visible to patients and colleagues.</small>
+                                <span asp-validation-for="Biography" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-12">
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between">
+                                    <a href="/" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-circle me-1"></i>Create Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Format identity number input
+        document.getElementById('IdentityNumber').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').substring(0, 11);
+        });
+        
+        // Format phone number input
+        document.getElementById('PhoneNumber').addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.startsWith('90')) {
+                    value = '+' + value;
+                } else if (value.startsWith('0')) {
+                    value = '+90' + value.substring(1);
+                } else if (!value.startsWith('+')) {
+                    value = '+90' + value;
+                }
+            }
+            this.value = value;
+        });
+    </script>
+} 

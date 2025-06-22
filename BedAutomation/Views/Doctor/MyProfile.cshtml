@@ -1,0 +1,320 @@
+@model BedAutomation.Models.Doctor
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container-fluid">
+    <!-- Profile Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-white rounded-circle p-3 me-4">
+                                    <i class="bi bi-person-badge fs-1 text-primary"></i>
+                                </div>
+                                <div>
+                                    <h2 class="mb-1">Dr. @Model.FirstName @Model.LastName</h2>
+                                    <p class="mb-1 opacity-75">@Model.Specialization</p>
+                                    <p class="mb-0 opacity-75">
+                                        <i class="bi bi-clock me-1"></i>@Model.YearsOfExperience years of experience
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-light">
+                                    <i class="bi bi-pencil me-1"></i>Edit Profile
+                                </a>
+                                <a asp-action="MyReservations" class="btn btn-outline-light">
+                                    <i class="bi bi-calendar-check me-1"></i>My Patients
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="row">
+        <!-- Personal Information -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person me-2"></i>Personal Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">First Name</label>
+                            <div class="fw-bold">@Model.FirstName</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Last Name</label>
+                            <div class="fw-bold">@Model.LastName</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Identity Number</label>
+                            <div class="fw-bold">@Model.IdentityNumber</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Phone Number</label>
+                            <div class="fw-bold">
+                                <i class="bi bi-telephone me-1"></i>@Model.PhoneNumber
+                            </div>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label text-muted">Email Address</label>
+                            <div class="fw-bold">
+                                <i class="bi bi-envelope me-1"></i>@Model.Email
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-briefcase me-2"></i>Professional Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Medical License Number</label>
+                            <div class="fw-bold">@Model.LicenseNumber</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Specialization</label>
+                            <div class="fw-bold">
+                                <span class="badge bg-primary fs-6">@Model.Specialization</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Years of Experience</label>
+                            <div class="fw-bold">@Model.YearsOfExperience years</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Status</label>
+                            <div class="fw-bold">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Biography))
+                        {
+                            <div class="col-12 mb-3">
+                                <label class="form-label text-muted">Professional Biography</label>
+                                <div class="fw-bold">@Model.Biography</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics & Quick Actions -->
+        <div class="col-lg-4">
+            <!-- Statistics -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <div class="fs-2 fw-bold text-primary">@Model.Reservations.Count()</div>
+                                <small class="text-muted">Total Patients</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <div class="fs-2 fw-bold text-success">@Model.Reservations.Count(r => r.Status == "Active")</div>
+                                <small class="text-muted">Active Cases</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <div class="fs-2 fw-bold text-info">@Model.Reservations.Count(r => r.Status == "Reserved")</div>
+                                <small class="text-muted">Reserved</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="border rounded p-3">
+                                <div class="fs-2 fw-bold text-secondary">@Model.Reservations.Count(r => r.Status == "Completed")</div>
+                                <small class="text-muted">Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning me-2"></i>Quick Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="MyReservations" class="btn btn-primary">
+                            <i class="bi bi-calendar-check me-2"></i>View My Patients
+                        </a>
+                        <a asp-controller="Reservation" asp-action="Calendar" class="btn btn-outline-primary">
+                            <i class="bi bi-calendar-event me-2"></i>Calendar View
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-secondary">
+                            <i class="bi bi-pencil me-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Information -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Account Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-2">
+                        <small class="text-muted">Profile Created</small>
+                        <div class="fw-bold">@Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+                    </div>
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="mb-2">
+                            <small class="text-muted">Last Updated</small>
+                            <div class="fw-bold">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Patients -->
+    @if (Model.Reservations.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-people me-2"></i>Recent Patients
+                        </h5>
+                        <a asp-action="MyReservations" class="btn btn-sm btn-outline-primary">
+                            View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Room & Bed</th>
+                                        <th>Check-in Date</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reservation in Model.Reservations.OrderByDescending(r => r.CreatedAt).Take(5))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary rounded-circle p-2 me-2">
+                                                        <i class="bi bi-person text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">@reservation.Patient.FirstName @reservation.Patient.LastName</div>
+                                                        <small class="text-muted">@reservation.Patient.IdentityNumber</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold">Room @reservation.Bed.Room.RoomNumber</div>
+                                                <small class="text-muted">Bed @reservation.Bed.BedNumber</small>
+                                            </td>
+                                            <td>@reservation.CheckInDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @switch (reservation.Status)
+                                                {
+                                                    case "Active":
+                                                        <span class="badge bg-success">Active</span>
+                                                        break;
+                                                    case "Reserved":
+                                                        <span class="badge bg-primary">Reserved</span>
+                                                        break;
+                                                    case "Completed":
+                                                        <span class="badge bg-secondary">Completed</span>
+                                                        break;
+                                                    case "Cancelled":
+                                                        <span class="badge bg-danger">Cancelled</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-light text-dark">@reservation.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (reservation.Priority)
+                                                {
+                                                    case "Emergency":
+                                                        <span class="badge bg-danger">Emergency</span>
+                                                        break;
+                                                    case "High":
+                                                        <span class="badge bg-warning">High</span>
+                                                        break;
+                                                    case "Normal":
+                                                        <span class="badge bg-info">Normal</span>
+                                                        break;
+                                                    case "Low":
+                                                        <span class="badge bg-secondary">Low</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-light text-dark">@reservation.Priority</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-controller="Reservation" asp-action="Details" asp-route-id="@reservation.Id" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div> 

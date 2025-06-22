@@ -1,0 +1,169 @@
+@model BedAutomation.Models.Patient
+
+@{
+    ViewData["Title"] = "Profili Düzenle";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Profili Düzenle
+                    </h4>
+                    <a asp-action="MyProfile" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Profili Görüntüle
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditProfile" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <!-- Kişisel Bilgiler Bölümü -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-person me-2"></i>
+                                    Kişisel Bilgiler
+                                </h5>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="FirstName" class="form-control" placeholder="Adınız" />
+                                    <label asp-for="FirstName">
+                                        <i class="bi bi-person me-1"></i>Ad
+                                    </label>
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="LastName" class="form-control" placeholder="Soyadınız" />
+                                    <label asp-for="LastName">
+                                        <i class="bi bi-person me-1"></i>Soyad
+                                    </label>
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="IdentityNumber" class="form-control" placeholder="TC Kimlik Numaranız" maxlength="11" />
+                                    <label asp-for="IdentityNumber">
+                                        <i class="bi bi-card-text me-1"></i>TC Kimlik No
+                                    </label>
+                                    <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                    <label asp-for="DateOfBirth">
+                                        <i class="bi bi-calendar-event me-1"></i>Doğum Tarihi
+                                    </label>
+                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select asp-for="Gender" class="form-select">
+                                        <option value="">Cinsiyet Seçiniz</option>
+                                        <option value="Male">Erkek</option>
+                                        <option value="Female">Kadın</option>
+                                        <option value="Other">Diğer</option>
+                                    </select>
+                                    <label asp-for="Gender">
+                                        <i class="bi bi-gender-ambiguous me-1"></i>Cinsiyet
+                                    </label>
+                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- İletişim Bilgileri Bölümü -->
+                        <div class="row mb-4 mt-4">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-telephone me-2"></i>
+                                    İletişim Bilgileri
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="Email" class="form-control" placeholder="E-posta adresiniz" />
+                                    <label asp-for="Email">
+                                        <i class="bi bi-envelope me-1"></i>E-posta
+                                    </label>
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon numaranız" />
+                                    <label asp-for="PhoneNumber">
+                                        <i class="bi bi-phone me-1"></i>Telefon
+                                    </label>
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-floating mb-3">
+                                    <textarea asp-for="Address" class="form-control" style="height: 100px" placeholder="Tam adresiniz"></textarea>
+                                    <label asp-for="Address">
+                                        <i class="bi bi-house me-1"></i>Adres
+                                    </label>
+                                    <span asp-validation-for="Address" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a asp-action="MyProfile" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                İptal Et
+                            </a>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="submit" form="editProfileForm" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>
+                                Değişiklikleri Kaydet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form'u footer'daki butonla ilişkilendirmek için form'a id ekleyelim -->
+<script>
+document.querySelector('form').id = 'editProfileForm';
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

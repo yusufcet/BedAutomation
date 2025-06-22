@@ -1,0 +1,210 @@
+@model BedAutomation.Models.Prescription
+
+@{
+    ViewData["Title"] = "Manage Medications";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Prescription Info Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="bi bi-prescription2 me-2"></i>Prescription: @Model.PrescriptionNumber</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Patient:</strong> @(Model.Patient?.FullName ?? "N/A")</p>
+                            <p><strong>Doctor:</strong> @(Model.Doctor?.FullName ?? "N/A")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Date:</strong> @Model.PrescriptionDate.ToString("dd MMM yyyy")</p>
+                            <p><strong>Status:</strong> 
+                                <span class="badge bg-@(Model.Status == "Active" ? "success" : Model.Status == "Completed" ? "info" : "danger")">
+                                    @Model.Status
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Medication Card -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-plus-circle me-2"></i>Add Medication</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddMedication" method="post">
+                        <input type="hidden" name="prescriptionId" value="@Model.Id" />
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Medication *</label>
+                                <select name="medicationId" class="form-select" required asp-items="ViewBag.Medications">
+                                    <option value="">Select medication...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Dosage *</label>
+                                <input type="text" name="dosage" class="form-control" placeholder="e.g. 500mg" required />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Frequency *</label>
+                                <input type="text" name="frequency" class="form-control" placeholder="e.g. 2x daily" required />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">Duration</label>
+                                <input type="number" name="duration" class="form-control" placeholder="7" min="1" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">Quantity</label>
+                                <input type="number" name="quantity" class="form-control" placeholder="30" min="1" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="startDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-success form-control">
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-8">
+                                <label class="form-label">Instructions</label>
+                                <input type="text" name="instructions" required class="form-control" placeholder="Take with food, avoid alcohol..." />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">End Date</label>
+                                <input type="date" name="endDate" required class="form-control" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Current Medications Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-list-ul me-2"></i>Current Medications (@Model.PrescriptionMedications.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.PrescriptionMedications.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Medication</th>
+                                        <th>Dosage</th>
+                                        <th>Frequency</th>
+                                        <th>Duration</th>
+                                        <th>Quantity</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Instructions</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var pm in Model.PrescriptionMedications)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@(pm.Medication?.Name ?? "Unknown")</strong>
+                                                @if (!string.IsNullOrEmpty(pm.Medication?.GenericName))
+                                                {
+                                                    <br><small class="text-muted">(@pm.Medication.GenericName)</small>
+                                                }
+                                            </td>
+                                            <td>@pm.Dosage</td>
+                                            <td>@pm.Frequency</td>
+                                            <td>@pm.Duration days</td>
+                                            <td>@pm.Quantity</td>
+                                            <td>@pm.StartDate.ToString("dd/MM/yyyy")</td>
+                                            <td>@pm.EndDate.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(pm.Instructions))
+                                                {
+                                                    @pm.Instructions
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <form asp-action="RemoveMedication" method="post" class="d-inline">
+                                                    <input type="hidden" name="prescriptionMedicationId" value="@pm.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                            onclick="return confirm('Bu ilacı reçeteden çıkarmak istediğinizden emin misiniz?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-pills text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">Bu reçetede henüz ilaç bulunmuyor.</p>
+                            <p class="text-muted">Yukarıdaki formu kullanarak ilaç ekleyebilirsiniz.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="d-flex justify-content-between mt-4">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Prescriptions
+                </a>
+                <div>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-pencil me-1"></i>Edit Prescription
+                    </a>
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                        <i class="bi bi-eye me-1"></i>View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Auto-calculate end date based on start date and duration
+        $('input[name="duration"]').on('input', function() {
+            var duration = parseInt($(this).val());
+            var startDate = $('input[name="startDate"]').val();
+            
+            if (duration && startDate) {
+                var start = new Date(startDate);
+                var end = new Date(start.getTime() + (duration * 24 * 60 * 60 * 1000));
+                $('input[name="endDate"]').val(end.toISOString().split('T')[0]);
+            }
+        });
+        
+        $('input[name="startDate"]').on('change', function() {
+            var duration = parseInt($('input[name="duration"]').val());
+            var startDate = $(this).val();
+            
+            if (duration && startDate) {
+                var start = new Date(startDate);
+                var end = new Date(start.getTime() + (duration * 24 * 60 * 60 * 1000));
+                $('input[name="endDate"]').val(end.toISOString().split('T')[0]);
+            }
+        });
+    </script>
+} 

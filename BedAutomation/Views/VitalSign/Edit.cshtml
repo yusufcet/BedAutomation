@@ -1,0 +1,115 @@
+@model BedAutomation.Models.VitalSign
+
+@{
+    ViewData["Title"] = "Edit Vital Sign";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-heartbeat me-2"></i>Edit Vital Sign Measurement</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" id="vitalSignForm">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="row g-3">
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label">Patient *</label>
+                                <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                    <option value="">Select a patient...</option>
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Vital Sign Type Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="VitalSignTypeId" class="form-label">Vital Sign Type *</label>
+                                <select asp-for="VitalSignTypeId" class="form-select" asp-items="ViewBag.VitalSignTypes">
+                                    <option value="">Select vital sign type...</option>
+                                </select>
+                                <span asp-validation-for="VitalSignTypeId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Numeric Value -->
+                            <div class="col-md-6">
+                                <label asp-for="Value" class="form-label">Numeric Value *</label>
+                                <input asp-for="Value" class="form-control" placeholder="Enter numeric value..." step="0.01" />
+                                <span asp-validation-for="Value" class="text-danger"></span>
+                            </div>
+
+                            <!-- String Value -->
+                            <div class="col-md-6">
+                                <label asp-for="StringValue" class="form-label">Complex Value</label>
+                                <input asp-for="StringValue" class="form-control" placeholder="e.g., 120/80, Normal, etc." />
+                                <span asp-validation-for="StringValue" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusList">
+                                    <option value="">Select status...</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Measurement Date -->
+                            <div class="col-md-6">
+                                <label asp-for="MeasurementDate" class="form-label">Measurement Date *</label>
+                                <input asp-for="MeasurementDate" type="datetime-local" class="form-control" value="@Model.MeasurementDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="MeasurementDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Measured By -->
+                            <div class="col-md-6">
+                                <label asp-for="MeasuredBy" class="form-label">Measured By</label>
+                                <input asp-for="MeasuredBy" class="form-control" placeholder="Nurse/Doctor name..." />
+                                <span asp-validation-for="MeasuredBy" class="text-danger"></span>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="col-md-6">
+                                <label asp-for="Location" class="form-label">Location</label>
+                                <input asp-for="Location" class="form-control" placeholder="Room, Ward, Department..." />
+                                <span asp-validation-for="Location" class="text-danger"></span>
+                            </div>
+
+                            <!-- Verification Status -->
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input asp-for="IsVerified" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsVerified" class="form-check-label">
+                                        Verified Measurement
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Additional notes or observations..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Update Measurement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

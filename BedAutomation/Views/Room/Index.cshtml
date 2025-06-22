@@ -1,0 +1,176 @@
+@model IEnumerable<BedAutomation.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms Management";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-door-open"></i> Rooms Management</h1>
+                    <p class="mb-0">Manage hospital rooms and departments</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus"></i> Add New Room
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count()</h4>
+                                <p class="card-text">Total Rooms</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-door-open fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(r => r.IsActive)</h4>
+                                <p class="card-text">Active Rooms</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Sum(r => r.BedCapacity)</h4>
+                                <p class="card-text">Total Bed Capacity</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-bed fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Sum(r => r.Beds.Count)</h4>
+                                <p class="card-text">Current Beds</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-hospital fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-list"></i> Room List</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-door-open"></i> Room Number</th>
+                                    <th><i class="fas fa-hospital"></i> Type</th>
+                                    <th><i class="fas fa-stethoscope"></i> Department</th>
+                                    <th><i class="fas fa-building"></i> Floor</th>
+                                    <th><i class="fas fa-bed"></i> Bed Capacity</th>
+                                    <th><i class="fas fa-bed"></i> Current Beds</th>
+                                    <th><i class="fas fa-check-circle"></i> Status</th>
+                                    <th><i class="fas fa-cogs"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var room in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@room.RoomNumber</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@room.RoomType</span>
+                                        </td>
+                                        <td>@room.Department</td>
+                                        <td>
+                                            <i class="fas fa-building text-muted"></i> Floor @room.Floor
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@room.BedCapacity</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">@room.Beds.Count</span>
+                                        </td>
+                                        <td>
+                                            @if (room.IsActive)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Active
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times"></i> Inactive
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@room.Id" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@room.Id" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-door-open fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No rooms found</h4>
+                        <p class="text-muted">Start by adding a new room to the system.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add First Room
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

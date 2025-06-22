@@ -1,0 +1,149 @@
+@model BedAutomation.Models.Room
+
+@{
+    ViewData["Title"] = "Add New Room";
+}
+
+<div class="container">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-plus"></i> Add New Room</h1>
+                <p class="mb-0">Create a new hospital room</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-door-open"></i> Room Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="RoomNumber" class="form-label">
+                                        <i class="fas fa-door-open"></i> Room Number
+                                    </label>
+                                    <input asp-for="RoomNumber" class="form-control" placeholder="e.g., 101, A-201" />
+                                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="RoomType" class="form-label">
+                                        <i class="fas fa-hospital"></i> Room Type
+                                    </label>
+                                    <select asp-for="RoomType" class="form-control">
+                                        <option value="">Select room type</option>
+                                        <option value="ICU">ICU (Intensive Care Unit)</option>
+                                        <option value="General">General Ward</option>
+                                        <option value="Private">Private Room</option>
+                                        <option value="Emergency">Emergency Room</option>
+                                        <option value="Surgery">Surgery Room</option>
+                                        <option value="Maternity">Maternity Room</option>
+                                        <option value="Pediatric">Pediatric Room</option>
+                                    </select>
+                                    <span asp-validation-for="RoomType" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Department" class="form-label">
+                                        <i class="fas fa-stethoscope"></i> Department
+                                    </label>
+                                    <select asp-for="Department" class="form-control">
+                                        <option value="">Select department</option>
+                                        <option value="Cardiology">Cardiology</option>
+                                        <option value="Surgery">Surgery</option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Pediatrics">Pediatrics</option>
+                                        <option value="Orthopedics">Orthopedics</option>
+                                        <option value="Neurology">Neurology</option>
+                                        <option value="Oncology">Oncology</option>
+                                        <option value="Internal Medicine">Internal Medicine</option>
+                                        <option value="Maternity">Maternity</option>
+                                        <option value="Psychiatry">Psychiatry</option>
+                                    </select>
+                                    <span asp-validation-for="Department" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Floor" class="form-label">
+                                        <i class="fas fa-building"></i> Floor
+                                    </label>
+                                    <select asp-for="Floor" class="form-control">
+                                        <option value="">Select floor</option>
+                                        <option value="0">Ground Floor</option>
+                                        <option value="1">1st Floor</option>
+                                        <option value="2">2nd Floor</option>
+                                        <option value="3">3rd Floor</option>
+                                        <option value="4">4th Floor</option>
+                                        <option value="5">5th Floor</option>
+                                        <option value="6">6th Floor</option>
+                                        <option value="7">7th Floor</option>
+                                        <option value="8">8th Floor</option>
+                                        <option value="9">9th Floor</option>
+                                        <option value="10">10th Floor</option>
+                                    </select>
+                                    <span asp-validation-for="Floor" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BedCapacity" class="form-label">
+                                <i class="fas fa-bed"></i> Bed Capacity
+                            </label>
+                            <input asp-for="BedCapacity" class="form-control" type="number" min="1" max="20" placeholder="Number of beds" />
+                            <div class="form-text">Maximum number of beds this room can accommodate (1-20)</div>
+                            <span asp-validation-for="BedCapacity" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">
+                                <i class="fas fa-info-circle"></i> Description
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Additional room details, equipment, or special features..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Note:</strong> Beds will be automatically created based on the bed capacity you specify.
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Create Room
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

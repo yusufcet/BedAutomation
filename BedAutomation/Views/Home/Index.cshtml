@@ -1,0 +1,384 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    var stats = ViewBag.Stats;
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-1"><i class="bi bi-speedometer2 me-2 text-primary"></i>Hospital Dashboard</h2>
+                    <p class="text-muted mb-0">Real-time hospital management overview</p>
+                </div>
+                <div class="text-muted">
+                    <i class="bi bi-calendar-event me-1"></i>@DateTime.UtcNow.ToString("MMM dd, yyyy")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-1">@stats.TotalPatients</h3>
+                            <p class="mb-0">Total Patients</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-1">@stats.TotalDoctors</h3>
+                            <p class="mb-0">Active Doctors</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-person-badge fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-1">@stats.AvailableBeds</h3>
+                            <p class="mb-0">Available Beds</p>
+                            <small class="opacity-75">of @stats.TotalBeds total</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-house fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="mb-1">@stats.OccupancyRate%</h3>
+                            <p class="mb-0">Occupancy Rate</p>
+                            <small class="opacity-75">@stats.OccupiedBeds occupied beds</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-graph-up fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Metrics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="card border-left-primary h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Active Reservations</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@stats.ActiveReservations</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="card border-left-success h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Today's Check-ins</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@stats.TodayReservations</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-calendar-day fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 mb-3">
+            <div class="card border-left-info h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Rooms</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@stats.TotalRooms</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="bi bi-door-open fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Charts and Analytics -->
+    <div class="row mb-4">
+        <!-- Monthly Reservations Trend -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-graph-up me-2"></i>Reservations Trend (Last 6 Months)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyTrendChart" width="100%" height="40"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Distribution -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-pie-chart me-2"></i>Reservation Status
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" width="100%" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity and Department Stats -->
+    <div class="row">
+        <!-- Recent Reservations -->
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-clock-history me-2"></i>Recent Reservations
+                    </h6>
+                    <a href="@Url.Action("Index", "Reservation")" class="btn btn-primary btn-sm">
+                        <i class="bi bi-eye me-1"></i>View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (stats.RecentReservations != null && ((IEnumerable<BedAutomation.Models.Reservation>)stats.RecentReservations).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Room/Bed</th>
+                                        <th>Doctor</th>
+                                        <th>Check-in</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reservation in stats.RecentReservations)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                        <i class="bi bi-person text-white"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>@reservation.Patient?.FullName</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    Room @reservation.Bed?.Room?.RoomNumber - Bed @reservation.Bed?.BedNumber
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (reservation.Doctor != null)
+                                                {
+                                                    <span class="text-success">@reservation.Doctor.DisplayName</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not assigned</span>
+                                                }
+                                            </td>
+                                            <td>@reservation.CheckInDate.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @switch (reservation.Status)
+                                                {
+                                                    case "Active":
+                                                        <span class="badge bg-success">@reservation.Status</span>
+                                                        break;
+                                                    case "Reserved":
+                                                        <span class="badge bg-primary">@reservation.Status</span>
+                                                        break;
+                                                    case "Completed":
+                                                        <span class="badge bg-secondary">@reservation.Status</span>
+                                                        break;
+                                                    case "Cancelled":
+                                                        <span class="badge bg-danger">@reservation.Status</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-light text-dark">@reservation.Status</span>
+                                                        break;
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            <p>No recent reservations found.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .border-left-primary {
+        border-left: 4px solid var(--bs-primary) !important;
+    }
+    .border-left-success {
+        border-left: 4px solid var(--bs-success) !important;
+    }
+    .border-left-info {
+        border-left: 4px solid var(--bs-info) !important;
+    }
+    .border-left-warning {
+        border-left: 4px solid var(--bs-warning) !important;
+    }
+    .avatar-sm {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.875rem;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 25px 0 rgba(0,0,0,0.1);
+    }
+</style>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Monthly Trend Chart
+    const monthlyData = @Html.Raw(Json.Serialize(stats.MonthlyTrend));
+    const monthlyLabels = monthlyData.map(item => item.month);
+    const monthlyValues = monthlyData.map(item => item.count);
+
+    const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                label: 'Reservations',
+                data: monthlyValues,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false,
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                    }
+                }
+            }
+        }
+    });
+
+    // Status Distribution Chart
+    const statusData = @Html.Raw(Json.Serialize(stats.StatusStats));
+    const statusLabels = statusData.map(item => item.status);
+    const statusValues = statusData.map(item => item.count);
+    
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusValues,
+                backgroundColor: [
+                    '#10b981', // Active - green
+                    '#6366f1', // Reserved - blue
+                    '#6b7280', // Completed - gray
+                    '#ef4444', // Cancelled - red
+                    '#f59e0b'  // Other - yellow
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15
+                    }
+                }
+            }
+        }
+    });
+</script>

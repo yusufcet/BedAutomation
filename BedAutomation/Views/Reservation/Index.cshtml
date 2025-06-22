@@ -1,0 +1,223 @@
+@model IEnumerable<BedAutomation.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Reservations Management";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-calendar-check"></i> Reservations Management</h1>
+                    <p class="mb-0">Manage bed reservations and bookings</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus"></i> New Reservation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-warning text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(r => r.Status == "Reserved")</h4>
+                                <p class="card-text">Reserved</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-clock fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(r => r.Status == "Active")</h4>
+                                <p class="card-text">Active</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-bed fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(r => r.Status == "Completed")</h4>
+                                <p class="card-text">Completed</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(r => r.Priority == "Emergency")</h4>
+                                <p class="card-text">Emergency</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-exclamation fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-list"></i> Reservation List</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user"></i> Patient</th>
+                                    <th><i class="fas fa-door-open"></i> Room</th>
+                                    <th><i class="fas fa-bed"></i> Bed</th>
+                                    <th><i class="fas fa-calendar"></i> Check-in</th>
+                                    <th><i class="fas fa-calendar-times"></i> Check-out</th>
+                                    <th><i class="fas fa-info-circle"></i> Status</th>
+                                    <th><i class="fas fa-flag"></i> Priority</th>
+                                    <th><i class="fas fa-cogs"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var reservation in Model)
+                                {
+                                    <tr class="@(reservation.Priority == "Emergency" ? "table-danger" : "")">
+                                        <td>
+                                            <strong>@reservation.Patient.FirstName @reservation.Patient.LastName</strong>
+                                            <br>
+                                            <small class="text-muted">@reservation.Patient.IdentityNumber</small>
+                                        </td>
+                                        <td>
+                                            @reservation.Bed.Room.RoomNumber
+                                            <br>
+                                            <small class="text-muted">@reservation.Bed.Room.Department</small>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">@reservation.Bed.BedNumber</span>
+                                        </td>
+                                        <td>@reservation.CheckInDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>
+                                            @if (reservation.CheckOutDate.HasValue)
+                                            {
+                                                @reservation.CheckOutDate.Value.ToString("dd/MM/yyyy HH:mm")
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge status-@reservation.Status.ToLower()">
+                                                <i class="fas fa-@(reservation.Status == "Active" ? "bed" : reservation.Status == "Reserved" ? "clock" : reservation.Status == "Completed" ? "check" : "times")"></i>
+                                                @reservation.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge priority-@reservation.Priority.ToLower()">
+                                                <i class="fas fa-@(reservation.Priority == "Emergency" ? "exclamation-triangle" : reservation.Priority == "High" ? "arrow-up" : reservation.Priority == "Normal" ? "minus" : "arrow-down")"></i>
+                                                @reservation.Priority
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a asp-action="Details" asp-route-id="@reservation.Id" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                @if (reservation.Status == "Reserved" || reservation.Status == "Active")
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@reservation.Id" class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    @if (reservation.Status == "Active")
+                                                    {
+                                                        <form asp-action="CheckOut" asp-route-id="@reservation.Id" method="post" style="display: inline;">
+                                                            <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to check out this patient?')">
+                                                                <i class="fas fa-sign-out-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                    
+                                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal@(reservation.Id)">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No reservations found</h4>
+                        <p class="text-muted">Start by creating a new reservation.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create First Reservation
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Modals -->
+@foreach (var reservation in Model.Where(r => r.Status == "Reserved" || r.Status == "Active"))
+{
+    <div class="modal fade" id="cancelModal@(reservation.Id)" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-action="Cancel" asp-route-id="@reservation.Id" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cancel Reservation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to cancel this reservation for <strong>@reservation.Patient.FirstName @reservation.Patient.LastName</strong>?</p>
+                        <div class="mb-3">
+                            <label for="cancellationReason" class="form-label">Reason for cancellation:</label>
+                            <textarea name="cancellationReason" class="form-control" rows="3" placeholder="Enter reason..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Cancel Reservation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+} 

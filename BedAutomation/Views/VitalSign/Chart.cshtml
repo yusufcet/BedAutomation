@@ -1,0 +1,266 @@
+@model IEnumerable<BedAutomation.Models.VitalSign>
+
+@{
+    ViewData["Title"] = "Vital Sign Trend Chart";
+    var patient = ViewBag.Patient as BedAutomation.Models.Patient;
+    var vitalSignType = ViewBag.VitalSignType as BedAutomation.Models.VitalSignType;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-graph-up me-2"></i>Vital Sign Trend Chart</h4>
+                    <div>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-list me-1"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Patient & Vital Sign Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary">
+                                        <i class="bi bi-person me-2"></i>Patient Information
+                                    </h6>
+                                    <p class="card-text">
+                                        <strong>@patient.FullName</strong><br>
+                                        <small class="text-muted">ID: @patient.IdentityNumber</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title text-info">
+                                        <i class="bi bi-thermometer me-2"></i>Vital Sign Type
+                                    </h6>
+                                    <p class="card-text">
+                                        <strong>@vitalSignType.Name</strong><br>
+                                        <small class="text-muted">Unit: @vitalSignType.Unit</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-activity me-2"></i>@vitalSignType.Name Trend Over Time
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="vitalSignChart" style="height: 400px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    @if (Model.Any())
+                    {
+                        <div class="row mt-4">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h6>Total Readings</h6>
+                                        <h3>@Model.Count()</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h6>Normal</h6>
+                                        <h3>@Model.Count(v => v.Status == "Normal")</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h6>Abnormal</h6>
+                                        <h3>@Model.Count(v => v.Status == "High" || v.Status == "Low")</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-danger text-white">
+                                    <div class="card-body text-center">
+                                        <h6>Critical</h6>
+                                        <h3>@Model.Count(v => v.Status == "Critical")</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Data Table -->
+                    @if (Model.Any())
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5><i class="bi bi-table me-2"></i>Detailed Readings</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Date & Time</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var reading in Model)
+                                            {
+                                                <tr>
+                                                    <td>@reading.MeasurementDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                                    <td><strong>@reading.Value @vitalSignType.Unit</strong></td>
+                                                    <td>
+                                                        @if (reading.Status == "Normal")
+                                                        {
+                                                            <span class="badge bg-success">@reading.Status</span>
+                                                        }
+                                                        else if (reading.Status == "Critical")
+                                                        {
+                                                            <span class="badge bg-danger">@reading.Status</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-warning">@reading.Status</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <a asp-action="Details" asp-route-id="@reading.Id" class="btn btn-sm btn-outline-info">
+                                                            <i class="bi bi-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-graph-down fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Data Available</h5>
+                            <p class="text-muted">No vital sign readings found for this patient and vital sign type.</p>
+                            <p class="text-muted">
+                                <strong>Patient:</strong> @patient?.FullName<br>
+                                <strong>Vital Sign Type:</strong> @vitalSignType?.Name
+                            </p>
+                            <a asp-action="Create" asp-route-patientId="@ViewBag.Patient?.GetType().GetProperty("Id")?.GetValue(ViewBag.Patient)" asp-route-vitalSignTypeId="@ViewBag.VitalSignType?.GetType().GetProperty("Id")?.GetValue(ViewBag.VitalSignType)" class="btn btn-primary">
+                                <i class="bi bi-plus me-1"></i>Add First Reading
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Get chart data
+        const chartData = @Html.Raw(Json.Serialize(ViewBag.ChartData));
+        
+        if (chartData && chartData.length > 0) {
+            const ctx = document.getElementById('vitalSignChart').getContext('2d');
+            
+            // Prepare data
+            const labels = chartData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('en-GB') + ' ' + date.toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'});
+            });
+            const values = chartData.map(item => item.value);
+            const statuses = chartData.map(item => item.status);
+            
+            // Status colors
+            const pointColors = statuses.map(status => {
+                switch(status) {
+                    case 'Normal': return '#28a745';
+                    case 'High': return '#ffc107';
+                    case 'Low': return '#fd7e14';
+                    case 'Critical': return '#dc3545';
+                    default: return '#6c757d';
+                }
+            });
+
+            // Create chart
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '@vitalSignType.Name (@vitalSignType.Unit)',
+                        data: values,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: pointColors,
+                        pointBorderColor: pointColors,
+                        pointRadius: 5,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '@vitalSignType.Name Trend for @patient.FullName'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: '@vitalSignType.Unit'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date & Time'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<style>
+    #vitalSignChart {
+        max-height: 400px;
+    }
+    
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        border: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    
+    .table th {
+        border-top: none;
+    }
+</style>

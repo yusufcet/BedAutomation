@@ -1,0 +1,281 @@
+@model BedAutomation.Models.MedicalRecord
+
+@{
+    ViewData["Title"] = "Medical Record Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-file-medical me-2"></i>Medical Record Details</h4>
+                    <div>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Doctor"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </a>
+                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-list me-1"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <!-- Hasta ve Doktor -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Patient</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person me-2 text-primary"></i>
+                                    @Html.DisplayFor(model => model.Patient.FullName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Doctor</label>
+                                <div class="info-value">
+                                    <i class="bi bi-person-badge me-2 text-info"></i>
+                                    @Html.DisplayFor(model => model.Doctor.FullName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kayıt Türü ve Durum -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Record Type</label>
+                                <div class="info-value">
+                                    <i class="bi bi-tag me-2 text-success"></i>
+                                    @Model.RecordType
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Status</label>
+                                <div class="info-value">
+                                    @{
+                                        var statusClass = Model.Status switch
+                                        {
+                                            "Active" => "bg-success",
+                                            "Closed" => "bg-secondary",
+                                            "Pending" => "bg-warning",
+                                            _ => "bg-info"
+                                        };
+                                    }
+                                    <span class="badge @statusClass">@Model.Status</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Öncelik -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Priority</label>
+                                <div class="info-value">
+                                    @{
+                                        var priorityClass = Model.Priority switch
+                                        {
+                                            "Low" => "bg-info",
+                                            "Normal" => "bg-secondary",
+                                            "High" => "bg-warning",
+                                            "Critical" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+                                    <span class="badge @priorityClass">@Model.Priority</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kayıt Tarihi -->
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label class="info-label">Record Date</label>
+                                <div class="info-value">
+                                    <i class="bi bi-calendar me-2 text-primary"></i>
+                                    @Model.RecordDate.ToString("dd.MM.yyyy HH:mm")
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Şikayet -->
+                        @if (!string.IsNullOrEmpty(Model.ChiefComplaint))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Chief Complaint</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.ChiefComplaint
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Hastalık Öyküsü -->
+                        @if (!string.IsNullOrEmpty(Model.HistoryOfPresentIllness))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">History of Present Illness</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.HistoryOfPresentIllness
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Fizik Muayene -->
+                        @if (!string.IsNullOrEmpty(Model.PhysicalExamination))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Physical Examination</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-info bg-opacity-10 rounded">
+                                            @Model.PhysicalExamination
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Değerlendirme -->
+                        @if (!string.IsNullOrEmpty(Model.Assessment))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Assessment</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-success bg-opacity-10 rounded">
+                                            @Model.Assessment
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Plan -->
+                        @if (!string.IsNullOrEmpty(Model.Plan))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Treatment Plan</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-warning bg-opacity-10 rounded">
+                                            @Model.Plan
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Notlar -->
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="col-md-12">
+                                <div class="info-group">
+                                    <label class="info-label">Notes</label>
+                                    <div class="info-value">
+                                        <div class="p-3 bg-light rounded">
+                                            @Model.Notes
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Tanılar -->
+                    @if (Model.Diagnoses?.Any() == true)
+                    {
+                        <div class="mt-4">
+                            <h5><i class="bi bi-clipboard-pulse me-2"></i>Diagnoses</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Diagnosis</th>
+                                            <th>ICD Code</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var diagnosis in Model.Diagnoses)
+                                        {
+                                            <tr>
+                                                <td><strong>@diagnosis.Name</strong></td>
+                                                <td>@diagnosis.ICDCode</td>
+                                                <td>@diagnosis.Type</td>
+                                                <td>@diagnosis.Status</td>
+                                                <td>@diagnosis.Description</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Tedavi Planları -->
+                    @if (Model.TreatmentPlans?.Any() == true)
+                    {
+                        <div class="mt-4">
+                            <h5><i class="bi bi-clipboard-check me-2"></i>Treatment Plans</h5>
+                            <div class="row">
+                                @foreach (var plan in Model.TreatmentPlans)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h6 class="mb-0">@plan.Title</h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <p><strong>Objectives:</strong> @plan.Objectives</p>
+                                                <p><strong>Interventions:</strong> @plan.Interventions</p>
+                                                <p><strong>Status:</strong> <span class="badge bg-info">@plan.Status</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-group {
+        margin-bottom: 1rem;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+        display: block;
+    }
+    .info-value {
+        font-size: 1rem;
+        color: #212529;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+</style>

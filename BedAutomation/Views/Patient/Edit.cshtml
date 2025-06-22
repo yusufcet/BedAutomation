@@ -1,0 +1,137 @@
+@model BedAutomation.Models.Patient
+
+@{
+    ViewData["Title"] = "Edit Patient";
+}
+
+<div class="container">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-user-edit"></i> Edit Patient</h1>
+                <p class="mb-0">Update patient information</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-edit"></i> Patient Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label">
+                                        <i class="fas fa-user"></i> First Name
+                                    </label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Enter first name" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">
+                                        <i class="fas fa-user"></i> Last Name
+                                    </label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Enter last name" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="IdentityNumber" class="form-label">
+                                        <i class="fas fa-id-card"></i> Identity Number
+                                    </label>
+                                    <input asp-for="IdentityNumber" class="form-control" placeholder="Enter ID number" maxlength="11" />
+                                    <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label">
+                                        <i class="fas fa-phone"></i> Phone Number
+                                    </label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Enter phone number" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="fas fa-envelope"></i> Email Address
+                            </label>
+                            <input asp-for="Email" class="form-control" placeholder="Enter email address" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DateOfBirth" class="form-label">
+                                        <i class="fas fa-calendar"></i> Date of Birth
+                                    </label>
+                                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Gender" class="form-label">
+                                        <i class="fas fa-venus-mars"></i> Gender
+                                    </label>
+                                    <select asp-for="Gender" class="form-control">
+                                        <option value="">Select Gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Gender" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">
+                                <i class="fas fa-map-marker-alt"></i> Address
+                            </label>
+                            <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter full address"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Patient
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

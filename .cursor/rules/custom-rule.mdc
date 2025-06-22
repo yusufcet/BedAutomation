@@ -1,0 +1,303 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# BedAutomation - AI Geliştirme Kuralları
+
+## 🏥 Proje Mimarisi
+
+### Teknoloji Stack
+- **Framework**: ASP.NET Core 9 MVC
+- **Database**: PostgreSQL (Npgsql.EntityFrameworkCore.PostgreSQL 9.0.0)
+- **Authentication**: ASP.NET Core Identity
+- **UI**: Bootstrap 5, Modern CSS, Bootstrap Icons
+- **Pattern**: MVC (Model-View-Controller)
+
+### Mevcut Entities
+```csharp
+- Patient (Hasta)
+- Room (Oda) 
+- Bed (Yatak)
+- Reservation (Rezervasyon)
+- IdentityUser (Kimlik doğrulama)
+```
+
+### Role Sistemi
+- **Admin**: Tam sistem yönetimi
+- **Patient**: Sadece kendi rezervasyonları ve profil yönetimi
+
+---
+
+## 🎯 AI Geliştirme Kuralları
+
+### Kural 1: Entity Oluşturma
+Yeni entity talep edildiğinde:
+
+1. **Model Oluştur** (`Models/[EntityName].cs`):
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace BedAutomation.Models
+{
+    public class [EntityName]
+    {
+        public int Id { get; set; }
+        
+        [Required]
+        [StringLength(100)]
+        public string Name { get; set; } = string.Empty;
+        
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        
+        // Navigation properties
+        public ICollection<RelatedEntity> RelatedEntities { get; set; } = new List<RelatedEntity>();
+    }
+}
+```
+
+2. **DbContext'e Ekle** (`Data/ApplicationDbContext.cs`):
+```csharp
+public DbSet<[EntityName]> [EntityNames] => Set<[EntityName]>();
+```
+
+3. **Migration Oluştur**:
+```bash
+dotnet ef migrations add Add[EntityName]System
+dotnet ef database update
+```
+
+### Kural 2: Controller Oluşturma
+Yeni controller talep edildiğinde:
+
+1. **Controller Yapısı** (`Controllers/[EntityName]Controller.cs`):
+```csharp
+[Authorize]
+public class [EntityName]Controller : Controller
+{
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<IdentityUser> _userManager;
+
+    public [EntityName]Controller(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+    {
+        _context = context;
+        _userManager = userManager;
+    }
+
+    // Admin-only: Index, Details, Create, Edit, Delete
+    // Patient role için gerekirse özel metodlar ekle
+}
+```
+
+2. **CRUD İşlemleri**:
+   - `Index` - Listeleme (Admin only genellikle)
+   - `Details` - Detay görüntüleme
+   - `Create` - Yeni kayıt ekleme
+   - `Edit` - Kayıt düzenleme
+   - `Delete` - Kayıt silme
+
+3. **Authorization**:
+   - Admin: `[Authorize(Roles = "Admin")]`
+   - Patient: `[Authorize(Roles = "Patient")]`
+   - Her ikisi: `[Authorize]`
+
+### Kural 3: View Oluşturma
+Her action için uygun view oluştur (`Views/[EntityName]/`):
+
+1. **Index.cshtml** - Modern kart tabanlı listeleme:
+```html
+@model IEnumerable<BedAutomation.Models.[EntityName]>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h4><i class="bi bi-[icon] me-2"></i>[Entity Title]</h4>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Yeni Ekle
+                    </a>
+                </div>
+                <div class="card-body">
+                    <!-- İstatistik kartları -->
+                    <!-- Tablo veya kart listesi -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+2. **Create.cshtml** - Modern form:
+```html
+@model BedAutomation.Models.[EntityName]
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="bi bi-[icon] me-2"></i>Yeni [Entity] Ekle</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <!-- Form alanları -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+### Kural 4: Navigation ve UI
+1. **Sidebar Navigation** (`Views/Shared/_Layout.cshtml`):
+   - Admin için: Yönetim menüleri
+   - Patient için: Kişisel menüler
+
+2. **Modern CSS Design**:
+   - Inter font family
+   - CSS variables (--primary, --secondary, etc.)
+   - Hover animations
+   - Responsive design
+   - Bootstrap Icons
+
+### Kural 5: Database İlişkileri
+Entity'ler arası ilişkiler:
+
+1. **One-to-Many**:
+```csharp
+// Ana entity
+public ICollection<ChildEntity> ChildEntities { get; set; } = new List<ChildEntity>();
+
+// Alt entity  
+public int ParentEntityId { get; set; }
+public ParentEntity ParentEntity { get; set; } = null!;
+```
+
+2. **Fluent API Configuration** (`ApplicationDbContext.cs`):
+```csharp
+modelBuilder.Entity<Entity>()
+    .HasIndex(e => e.UniqueField)
+    .IsUnique();
+```
+
+### Kural 6: DateTime ve PostgreSQL
+```csharp
+// Her zaman UTC kullan
+public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+// Controller'da:
+if (entity.DateField.Kind == DateTimeKind.Unspecified)
+{
+    entity.DateField = DateTime.SpecifyKind(entity.DateField, DateTimeKind.Utc);
+}
+```
+
+### Kural 7: Validation
+```csharp
+[Required(ErrorMessage = "Bu alan zorunludur")]
+[StringLength(100, ErrorMessage = "En fazla 100 karakter olabilir")]
+[EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz")]
+[Phone(ErrorMessage = "Geçerli bir telefon numarası giriniz")]
+```
+
+### Kural 8: Error Handling
+```csharp
+try
+{
+    _context.Add(entity);
+    await _context.SaveChangesAsync();
+    return RedirectToAction(nameof(Index));
+}
+catch (DbUpdateConcurrencyException)
+{
+    if (!EntityExists(entity.Id))
+    {
+        return NotFound();
+    }
+    else
+    {
+        throw;
+    }
+}
+```
+
+---
+
+## 📋 Geliştirme Checklist
+
+Yeni feature eklerken kontrol et:
+
+- [ ] Entity model oluşturuldu
+- [ ] DbContext'e eklendi  
+- [ ] Migration yapıldı
+- [ ] Controller CRUD işlemleri
+- [ ] Authorization uygulandı
+- [ ] Views oluşturuldu (modern tasarım)
+- [ ] Navigation güncellendi
+- [ ] DateTime UTC kontrolleri
+- [ ] Validation kuralları
+- [ ] Error handling
+- [ ] Responsive design
+- [ ] Bootstrap Icons
+- [ ] Türkçe metinler
+
+---
+
+## 🎨 UI/UX Standartları
+
+### Renk Paleti
+```css
+:root {
+    --primary: #6366f1;
+    --secondary: #64748b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --info: #06b6d4;
+    --light: #f8fafc;
+    --dark: #0f172a;
+}
+```
+
+### İkon Kullanımı
+- Hastalar: `bi-people`
+- Rezervasyonlar: `bi-calendar-check`
+- Odalar: `bi-door-open`
+- Yataklar: `bi-house`
+- Profil: `bi-person-circle`
+- Ayarlar: `bi-gear`
+
+### Kart Tasarımı
+```html
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5><i class="bi bi-[icon] me-2"></i>Başlık</h5>
+    </div>
+    <div class="card-body">
+        <!-- İçerik -->
+    </div>
+</div>
+```
+
+---
+
+-
+
+## 🔧 Örnek Kullanım
+
+**Kullanıcı İsteği**: "Doktor entity'si ekle, doktorların uzmanlık alanları ve çalıştıkları departmanları olsun"
+
+**AI Çıktısı**: 
+1. Doctor.cs model
+2. DoctorController.cs (CRUD)
+3. Doctor views (Index, Create, Edit, Details, Delete)
+4. Migration
+5. Navigation güncelleme
+6. Departman ilişkisi
+
+
+
+Bu kurallara uyarak tutarlı, kodlaması ve içeriği ingilizce olan, modern ve işlevsel kod üret! 

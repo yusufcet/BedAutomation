@@ -1,0 +1,183 @@
+@model BedAutomation.Models.MedicalRecord
+
+@{
+    ViewData["Title"] = "Edit Medical Record";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-file-medical me-2"></i>Edit Medical Record</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" id="medicalRecordForm">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="row g-3">
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label">Patient *</label>
+                                <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                    <option value="">Select a patient...</option>
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="DoctorId" class="form-label">Doctor</label>
+                                <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.Doctors">
+                                    <option value="">Select a doctor...</option>
+                                </select>
+                                <span asp-validation-for="DoctorId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Record Type -->
+                            <div class="col-md-6">
+                                <label asp-for="RecordType" class="form-label">Record Type *</label>
+                                <select asp-for="RecordType" class="form-select" asp-items="ViewBag.RecordTypes">
+                                    <option value="">Select record type...</option>
+                                </select>
+                                <span asp-validation-for="RecordType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Record Date -->
+                            <div class="col-md-6">
+                                <label asp-for="RecordDate" class="form-label">Record Date *</label>
+                                <input asp-for="RecordDate" type="datetime-local" class="form-control" value="@Model.RecordDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="RecordDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Chief Complaint -->
+                            <div class="col-md-12">
+                                <label asp-for="ChiefComplaint" class="form-label">Chief Complaint *</label>
+                                <textarea asp-for="ChiefComplaint" class="form-control" rows="3" placeholder="Patient's primary concern or reason for visit..."></textarea>
+                                <span asp-validation-for="ChiefComplaint" class="text-danger"></span>
+                            </div>
+
+                            <!-- History of Present Illness -->
+                            <div class="col-md-12">
+                                <label asp-for="HistoryOfPresentIllness" class="form-label">History of Present Illness</label>
+                                <textarea asp-for="HistoryOfPresentIllness" class="form-control" rows="4" placeholder="Detailed history of the current condition..."></textarea>
+                                <span asp-validation-for="HistoryOfPresentIllness" class="text-danger"></span>
+                            </div>
+
+                            <!-- Physical Examination -->
+                            <div class="col-md-12">
+                                <label asp-for="PhysicalExamination" class="form-label">Physical Examination</label>
+                                <textarea asp-for="PhysicalExamination" class="form-control" rows="4" placeholder="Physical examination findings..."></textarea>
+                                <span asp-validation-for="PhysicalExamination" class="text-danger"></span>
+                            </div>
+
+                            <!-- Assessment -->
+                            <div class="col-md-12">
+                                <label asp-for="Assessment" class="form-label">Assessment</label>
+                                <textarea asp-for="Assessment" class="form-control" rows="3" placeholder="Clinical assessment and impression..."></textarea>
+                                <span asp-validation-for="Assessment" class="text-danger"></span>
+                            </div>
+
+                            <!-- Plan -->
+                            <div class="col-md-12">
+                                <label asp-for="Plan" class="form-label">Plan</label>
+                                <textarea asp-for="Plan" class="form-control" rows="4" placeholder="Treatment plan and recommendations..."></textarea>
+                                <span asp-validation-for="Plan" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusList">
+                                    <option value="">Select status...</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Priority -->
+                            <div class="col-md-6">
+                                <label asp-for="Priority" class="form-label">Priority</label>
+                                <select asp-for="Priority" class="form-select" asp-items="ViewBag.PriorityList">
+                                    <option value="">Select priority...</option>
+                                </select>
+                                <span asp-validation-for="Priority" class="text-danger"></span>
+                            </div>
+
+                            <!-- Admission Date -->
+                            <div class="col-md-6">
+                                <label asp-for="AdmissionDate" class="form-label">Admission Date</label>
+                                <input asp-for="AdmissionDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="AdmissionDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Discharge Date -->
+                            <div class="col-md-6">
+                                <label asp-for="DischargeDate" class="form-label">Discharge Date</label>
+                                <input asp-for="DischargeDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="DischargeDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Discharge Summary -->
+                            <div class="col-md-12">
+                                <label asp-for="DischargeSummary" class="form-label">Discharge Summary</label>
+                                <textarea asp-for="DischargeSummary" class="form-control" rows="4" placeholder="Summary of treatment and discharge instructions..."></textarea>
+                                <span asp-validation-for="DischargeSummary" class="text-danger"></span>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label">Additional Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any additional notes or observations..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <div>
+                                <a asp-action="ManageDiagnoses" asp-route-id="@Model.Id" class="btn btn-outline-info me-2">
+                                    <i class="fas fa-stethoscope me-1"></i>Manage Diagnoses
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Medical Record
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Show/hide date fields based on record type
+        document.getElementById('RecordType').addEventListener('change', function() {
+            const recordType = this.value;
+            const admissionDateField = document.getElementById('AdmissionDate').closest('.col-md-6');
+            const dischargeDateField = document.getElementById('DischargeDate').closest('.col-md-6');
+            const dischargeSummaryField = document.getElementById('DischargeSummary').closest('.col-md-12');
+            
+            if (recordType === 'Admission') {
+                admissionDateField.style.display = 'block';
+                dischargeDateField.style.display = 'none';
+                dischargeSummaryField.style.display = 'none';
+            } else if (recordType === 'Discharge') {
+                admissionDateField.style.display = 'block';
+                dischargeDateField.style.display = 'block';
+                dischargeSummaryField.style.display = 'block';
+            } else {
+                admissionDateField.style.display = 'none';
+                dischargeDateField.style.display = 'none';
+                dischargeSummaryField.style.display = 'none';
+            }
+        });
+
+        // Trigger the change event on page load
+        document.getElementById('RecordType').dispatchEvent(new Event('change'));
+    </script>
+} 

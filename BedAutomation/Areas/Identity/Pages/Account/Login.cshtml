@@ -1,0 +1,226 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .auth-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 3rem;
+        width: 100%;
+        max-width: 450px;
+        margin: 2rem;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-title {
+        color: #1a202c;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        color: #718096;
+        font-size: 1rem;
+        margin-bottom: 0;
+    }
+
+    .form-floating {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-floating > .form-control {
+        height: 60px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem 1rem 0.25rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+    .form-floating > .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background: #ffffff;
+    }
+
+    .form-floating > label {
+        padding: 1rem 1rem 0.25rem;
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        height: 60px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.75rem;
+        border: 2px solid #cbd5e0;
+        border-radius: 6px;
+    }
+
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .auth-link {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-link:hover {
+        color: #5a67d8;
+        text-decoration: none;
+    }
+
+    .hospital-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .hospital-icon {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+
+    .alert-danger {
+        background: #fed7d7;
+        border: 1px solid #fc8181;
+        color: #c53030;
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .text-danger {
+        color: #e53e3e !important;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    @@media (max-width: 576px) {
+        .auth-container {
+            margin: 1rem;
+            padding: 2rem;
+        }
+        
+        .auth-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>
+
+<div class="container-fluid p-0">
+    <div class="auth-container">
+        <div class="hospital-logo">
+            <i class="bi bi-hospital hospital-icon"></i>
+            <h2 class="auth-title">BedAutomation</h2>
+            <p class="auth-subtitle">Hospital Management System Login</p>
+        </div>
+
+        <form id="account" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            
+            <div class="form-floating">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="E-posta adresinizi girin" />
+                <label asp-for="Input.Email" class="form-label">Email Address</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating">
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Şifrenizi girin" />
+                <label asp-for="Input.Password" class="form-label">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+
+            <div class="remember-me">
+                <input class="form-check-input" asp-for="Input.RememberMe" />
+                <label asp-for="Input.RememberMe" class="form-label">
+                    Remember Me
+                </label>
+            </div>
+
+            <div class="d-grid">
+                <button id="login-submit" type="submit" class="btn btn-login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                    Login
+                </button>
+            </div>
+
+            <div class="auth-links">
+                <a id="forgot-password" asp-page="./ForgotPassword" class="auth-link">
+                    <i class="bi bi-question-circle me-1"></i>
+                    Forgot Password
+                </a>
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">
+                    <i class="bi bi-person-plus me-1"></i>
+                    Create New Account
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,203 @@
+@model IEnumerable<BedAutomation.Models.Bed>
+
+@{
+    ViewData["Title"] = "Beds Management";
+}
+
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-bed"></i> Beds Management</h1>
+                    <p class="mb-0">Manage hospital beds and availability</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-action="Create" class="btn btn-light btn-lg">
+                        <i class="fas fa-plus"></i> Add New Bed
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count()</h4>
+                                <p class="card-text">Total Beds</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-bed fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(b => !b.IsOccupied && b.IsActive)</h4>
+                                <p class="card-text">Available</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-check fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(b => b.IsOccupied)</h4>
+                                <p class="card-text">Occupied</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="card-title">@Model.Count(b => b.IsMaintenanceRequired)</h4>
+                                <p class="card-text">Maintenance</p>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="fas fa-tools fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="fas fa-list"></i> Bed List</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-bed"></i> Bed Number</th>
+                                    <th><i class="fas fa-door-open"></i> Room</th>
+                                    <th><i class="fas fa-stethoscope"></i> Department</th>
+                                    <th><i class="fas fa-hospital"></i> Type</th>
+                                    <th><i class="fas fa-user"></i> Current Patient</th>
+                                    <th><i class="fas fa-info-circle"></i> Status</th>
+                                    <th><i class="fas fa-cogs"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var bed in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@bed.BedNumber</strong>
+                                        </td>
+                                        <td>
+                                            @bed.Room.RoomNumber
+                                            <br>
+                                            <small class="text-muted">Floor @bed.Room.Floor</small>
+                                        </td>
+                                        <td>@bed.Room.Department</td>
+                                        <td>
+                                            <span class="badge bg-info">@bed.BedType</span>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var activeReservation = bed.Reservations.FirstOrDefault(r => r.Status == "Active" || r.Status == "Reserved");
+                                            }
+                                            @if (activeReservation != null)
+                                            {
+                                                <strong>@activeReservation.Patient.FirstName @activeReservation.Patient.LastName</strong>
+                                                <br>
+                                                <small class="text-muted">@activeReservation.Patient.IdentityNumber</small>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (bed.IsMaintenanceRequired)
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-tools"></i> Maintenance
+                                                </span>
+                                            }
+                                            else if (bed.IsOccupied)
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-user"></i> Occupied
+                                                </span>
+                                            }
+                                            else if (bed.IsActive)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check"></i> Available
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-times"></i> Inactive
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a asp-action="Details" asp-route-id="@bed.Id" class="btn btn-info btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@bed.Id" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form asp-action="ToggleMaintenance" asp-route-id="@bed.Id" method="post" style="display: inline;">
+                                                    <button type="submit" class="btn btn-secondary btn-sm">
+                                                        <i class="fas fa-tools"></i>
+                                                    </button>
+                                                </form>
+                                                <a asp-action="Delete" asp-route-id="@bed.Id" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-bed fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">No beds found</h4>
+                        <p class="text-muted">Start by adding a new bed to the system.</p>
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add First Bed
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,134 @@
+@model BedAutomation.Models.Bed
+
+@{
+    ViewData["Title"] = "Edit Bed";
+}
+
+<div class="container">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-edit"></i> Edit Bed</h1>
+                <p class="mb-0">Update bed information</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bed"></i> Bed Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="BedNumber" class="form-label">
+                                        <i class="fas fa-bed"></i> Bed Number
+                                    </label>
+                                    <input asp-for="BedNumber" class="form-control" placeholder="e.g., 101-01, A-201-02" />
+                                    <span asp-validation-for="BedNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="RoomId" class="form-label">
+                                        <i class="fas fa-door-open"></i> Room
+                                    </label>
+                                    <select asp-for="RoomId" class="form-control" asp-items="ViewBag.RoomId">
+                                        <option value="">Select a room</option>
+                                    </select>
+                                    <span asp-validation-for="RoomId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="BedType" class="form-label">
+                                        <i class="fas fa-hospital"></i> Bed Type
+                                    </label>
+                                    <select asp-for="BedType" class="form-control">
+                                        <option value="">Select bed type</option>
+                                        <option value="Standard">Standard</option>
+                                        <option value="Electric">Electric</option>
+                                        <option value="ICU">ICU Bed</option>
+                                        <option value="Pediatric">Pediatric</option>
+                                        <option value="Bariatric">Bariatric</option>
+                                        <option value="Maternity">Maternity</option>
+                                        <option value="Cardiac">Cardiac</option>
+                                    </select>
+                                    <span asp-validation-for="BedType" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <i class="fas fa-cogs"></i> Status Settings
+                                    </label>
+                                    <div class="form-control-static">
+                                        <div class="form-check mb-2">
+                                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                                            <label asp-for="IsActive" class="form-check-label">
+                                                Active (Available for reservations)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input asp-for="IsMaintenanceRequired" class="form-check-input" type="checkbox" />
+                                            <label asp-for="IsMaintenanceRequired" class="form-check-label">
+                                                Maintenance Required
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">
+                                <i class="fas fa-sticky-note"></i> Notes
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Additional notes about the bed, equipment, or special features..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        @if (Model.IsOccupied)
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Warning:</strong> This bed is currently occupied. Some changes may affect the current patient.
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Bed
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

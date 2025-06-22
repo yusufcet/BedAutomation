@@ -1,0 +1,367 @@
+@model BedAutomation.Models.Reservation
+
+@{
+    ViewData["Title"] = "Create New Reservation";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-plus-circle me-2"></i>Create New Reservation
+                        </h4>
+                        @if (ViewBag.IsPatientUser)
+                        {
+                            <a asp-action="MyReservations" asp-controller="Patient" class="btn btn-light btn-sm">
+                                <i class="bi bi-arrow-left"></i> Back to My Reservations
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" class="btn btn-light btn-sm">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" id="reservationForm">
+                        <div asp-validation-summary="All" class="alert alert-danger d-none"></div>
+                        
+                        @* Hidden field for BedId (will be set by JavaScript) *@
+                        <input asp-for="BedId" type="hidden" id="HiddenBedId" />
+
+                        <div class="row">
+                            @if (!ViewBag.IsPatientUser)
+                            {
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="PatientId" class="form-label">
+                                            <i class="bi bi-person me-1"></i>Patient <span class="text-danger">*</span>
+                                        </label>
+                                        <select asp-for="PatientId" class="form-select" required>
+                                            <option value="">-- Select Patient --</option>
+                                            @if (ViewBag.Patients != null)
+                                            {
+                                                @foreach (var patient in ViewBag.Patients)
+                                                {
+                                                    <option value="@patient.Value">@patient.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="PatientId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-6">
+                                    <input asp-for="PatientId" type="hidden" />
+                                    <div class="mb-3">
+                                        <label class="form-label">
+                                            <i class="bi bi-person me-1"></i>Patient
+                                        </label>
+                                        <div class="form-control-plaintext bg-light p-2 rounded">
+                                            <i class="bi bi-check-circle text-success me-1"></i>@ViewBag.PatientName
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="CheckInDate" class="form-label">
+                                        <i class="bi bi-calendar me-1"></i>Check-in Date & Time <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="CheckInDate" type="datetime-local" class="form-control" required />
+                                    <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="CheckOutDate" class="form-label">
+                                        <i class="bi bi-calendar-x me-1"></i>Expected Check-out Date (Optional)
+                                    </label>
+                                    <input asp-for="CheckOutDate" type="datetime-local" class="form-control" />
+                                    <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Priority" class="form-label">
+                                        <i class="bi bi-flag me-1"></i>Priority Level
+                                    </label>
+                                    <select asp-for="Priority" class="form-select">
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High</option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-hospital me-2"></i>Bed Selection
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="Department" class="form-label">
+                                                <i class="bi bi-building me-1"></i>Department <span class="text-danger">*</span>
+                                            </label>
+                                            <select id="Department" class="form-select" required>
+                                                <option value="">-- Select Department --</option>
+                                                @if (ViewBag.Departments != null)
+                                                {
+                                                    @foreach (var dept in ViewBag.Departments)
+                                                    {
+                                                        <option value="@dept.Value">@dept.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="RoomType" class="form-label">
+                                                <i class="bi bi-grid-3x3 me-1"></i>Room Type <span class="text-danger">*</span>
+                                            </label>
+                                            <select id="RoomType" class="form-select" disabled>
+                                                <option value="">-- Select Room Type --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label for="Room" class="form-label">
+                                                <i class="bi bi-door-open me-1"></i>Room <span class="text-danger">*</span>
+                                            </label>
+                                            <select id="Room" class="form-select" disabled>
+                                                <option value="">-- Select Room --</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label asp-for="BedId" class="form-label">
+                                                <i class="bi bi-list me-1"></i>Available Bed <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="BedId" class="form-select" disabled>
+                                                <option value="">-- Select Bed --</option>
+                                            </select>
+                                            <span asp-validation-for="BedId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="AdmissionType" class="form-label">
+                                        <i class="bi bi-ambulance me-1"></i>Admission Type
+                                    </label>
+                                    <select asp-for="AdmissionType" class="form-select">
+                                        <option value="">-- Select Admission Type --</option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Scheduled">Scheduled</option>
+                                        <option value="Transfer">Transfer</option>
+                                        <option value="Outpatient">Outpatient</option>
+                                    </select>
+                                    <span asp-validation-for="AdmissionType" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DoctorId" class="form-label">
+                                        <i class="bi bi-person-badge me-1"></i>Assigned Doctor
+                                    </label>
+                                    <select asp-for="DoctorId" class="form-select">
+                                        <option value="">-- Select Doctor (Optional) --</option>
+                                        @if (ViewBag.Doctors != null)
+                                        {
+                                            @foreach (var doctor in ViewBag.Doctors)
+                                            {
+                                                <option value="@doctor.Value">@doctor.Text</option>
+                                            }
+                                        }
+                                    </select>
+                                    <span asp-validation-for="DoctorId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MedicalNotes" class="form-label">
+                                <i class="bi bi-journal-medical me-1"></i>Medical Notes
+                            </label>
+                            <textarea asp-for="MedicalNotes" class="form-control" rows="4" 
+                                      placeholder="Enter medical notes, conditions, or special requirements..."></textarea>
+                            <span asp-validation-for="MedicalNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            @if (ViewBag.IsPatientUser)
+                            {
+                                <a asp-action="MyReservations" asp-controller="Patient" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancel
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancel
+                                </a>
+                            }
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>Create Reservation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Set default check-in date to now
+            var now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            $('#CheckInDate').val(now.toISOString().slice(0, 16));
+
+            // Cascade dropdown functionality
+            $('#Department').change(function() {
+                var department = $(this).val();
+                
+                // Reset dependent dropdowns
+                $('#RoomType').prop('disabled', true).html('<option value="">-- Select Room Type --</option>');
+                $('#Room').prop('disabled', true).html('<option value="">-- Select Room --</option>');
+                $('#BedId').prop('disabled', true).html('<option value="">-- Select Bed --</option>');
+                
+                if (department) {
+                    $.get('@Url.Action("GetRoomTypes", "Reservation")', { department: department })
+                        .done(function(data) {
+                            $('#RoomType').prop('disabled', false);
+                            $.each(data, function(index, item) {
+                                $('#RoomType').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+                        })
+                        .fail(function() {
+                            alert('Error loading room types. Please try again.');
+                        });
+                }
+            });
+
+            $('#RoomType').change(function() {
+                var department = $('#Department').val();
+                var roomType = $(this).val();
+                
+                // Reset dependent dropdowns
+                $('#Room').prop('disabled', true).html('<option value="">-- Select Room --</option>');
+                $('#BedId').prop('disabled', true).html('<option value="">-- Select Bed --</option>');
+                
+                if (department && roomType) {
+                    $.get('@Url.Action("GetRooms", "Reservation")', { department: department, roomType: roomType })
+                        .done(function(data) {
+                            $('#Room').prop('disabled', false);
+                            $.each(data, function(index, item) {
+                                $('#Room').append('<option value="' + item.value + '">' + item.text + '</option>');
+                            });
+                        })
+                        .fail(function() {
+                            alert('Error loading rooms. Please try again.');
+                        });
+                }
+            });
+
+            $('#Room').change(function() {
+                var roomId = $(this).val();
+                
+                // Reset bed dropdown and hidden field
+                $('#BedId').prop('disabled', true).html('<option value="">-- Select Bed --</option>');
+                $('#HiddenBedId').val('');
+                
+                if (roomId) {
+                    $.get('@Url.Action("GetBeds", "Reservation")', { roomId: roomId })
+                        .done(function(data) {
+                            $('#BedId').prop('disabled', false);
+                            if (data.length === 0) {
+                                $('#BedId').append('<option value="">No available beds in this room</option>');
+                            } else {
+                                $.each(data, function(index, item) {
+                                    $('#BedId').append('<option value="' + item.value + '">' + item.text + '</option>');
+                                });
+                            }
+                        })
+                        .fail(function() {
+                            alert('Error loading beds. Please try again.');
+                        });
+                }
+            });
+
+            // Update hidden field when bed is selected
+            $('#BedId').change(function() {
+                var selectedBedId = $(this).val();
+                $('#HiddenBedId').val(selectedBedId);
+                console.log('Selected BedId:', selectedBedId);
+            });
+
+            // Form validation
+            $('#reservationForm').submit(function(e) {
+                var hasErrors = false;
+                
+                // Debug: Log form values before submit
+                console.log('Form Submit - PatientId:', $('#PatientId').val());
+                console.log('Form Submit - BedId (dropdown):', $('#BedId').val());
+                console.log('Form Submit - BedId (hidden):', $('#HiddenBedId').val());
+                
+                // Check required fields
+                if (!$('#Department').val()) {
+                    alert('Please select a department.');
+                    hasErrors = true;
+                }
+                if (!$('#RoomType').val()) {
+                    alert('Please select a room type.');
+                    hasErrors = true;
+                }
+                if (!$('#Room').val()) {
+                    alert('Please select a room.');
+                    hasErrors = true;
+                }
+                if (!$('#BedId').val() || !$('#HiddenBedId').val()) {
+                    alert('Please select a bed.');
+                    hasErrors = true;
+                }
+                
+                if (hasErrors) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+    </script>
+} 

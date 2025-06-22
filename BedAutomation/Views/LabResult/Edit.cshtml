@@ -1,0 +1,189 @@
+@model BedAutomation.Models.LabResult
+
+@{
+    ViewData["Title"] = "Edit Lab Result";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit me-2"></i>Edit Lab Result</h4>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <form asp-action="Edit" id="labResultEditForm">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        
+                        <div class="row g-3">
+                            <!-- Patient Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="PatientId" class="form-label">Patient *</label>
+                                <select asp-for="PatientId" class="form-select" asp-items="ViewBag.Patients">
+                                    <option value="">Select a patient...</option>
+                                </select>
+                                <span asp-validation-for="PatientId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Lab Test Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="LabTestId" class="form-label">Lab Test *</label>
+                                <select asp-for="LabTestId" class="form-select" asp-items="ViewBag.LabTests" onchange="loadLabParameters(this.value)">
+                                    <option value="">Select a lab test...</option>
+                                </select>
+                                <span asp-validation-for="LabTestId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Lab Parameter Selection -->
+                            <div class="col-md-6">
+                                <label asp-for="LabParameterId" class="form-label">Parameter *</label>
+                                <select asp-for="LabParameterId" class="form-select" asp-items="ViewBag.LabParameters" id="labParameterSelect">
+                                    <option value="">Select a parameter...</option>
+                                </select>
+                                <span asp-validation-for="LabParameterId" class="text-danger"></span>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label asp-for="Status" class="form-label">Status *</label>
+                                <select asp-for="Status" class="form-select" asp-items="ViewBag.StatusList">
+                                    <option value="">Select status...</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+
+                            <!-- Numeric Value -->
+                            <div class="col-md-6">
+                                <label asp-for="NumericValue" class="form-label">Numeric Value</label>
+                                <input asp-for="NumericValue" class="form-control" placeholder="Enter numeric value..." />
+                                <span asp-validation-for="NumericValue" class="text-danger"></span>
+                                <small class="form-text text-muted">For quantitative results</small>
+                            </div>
+
+                            <!-- Text Value -->
+                            <div class="col-md-6">
+                                <label asp-for="TextValue" class="form-label">Text Value</label>
+                                <input asp-for="TextValue" class="form-control" placeholder="Enter text value..." />
+                                <span asp-validation-for="TextValue" class="text-danger"></span>
+                                <small class="form-text text-muted">For qualitative results</small>
+                            </div>
+
+                            <!-- Test Date -->
+                            <div class="col-md-6">
+                                <label asp-for="TestDate" class="form-label">Test Date *</label>
+                                <input asp-for="TestDate" type="datetime-local" class="form-control" value="@Model.TestDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="TestDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Result Date -->
+                            <div class="col-md-6">
+                                <label asp-for="ResultDate" class="form-label">Result Date *</label>
+                                <input asp-for="ResultDate" type="datetime-local" class="form-control" value="@Model.ResultDate.ToString("yyyy-MM-ddTHH:mm")" />
+                                <span asp-validation-for="ResultDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Technician Name -->
+                            <div class="col-md-6">
+                                <label asp-for="TechnicianName" class="form-label">Technician Name</label>
+                                <input asp-for="TechnicianName" class="form-control" placeholder="Enter technician name..." />
+                                <span asp-validation-for="TechnicianName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Doctor Name -->
+                            <div class="col-md-6">
+                                <label asp-for="DoctorName" class="form-label">Doctor Name</label>
+                                <input asp-for="DoctorName" class="form-control" placeholder="Enter doctor name..." />
+                                <span asp-validation-for="DoctorName" class="text-danger"></span>
+                            </div>
+
+                            <!-- Verification Status -->
+                            <div class="col-md-12">
+                                <div class="form-check">
+                                    <input asp-for="IsVerified" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsVerified" class="form-check-label">
+                                        Verified Result
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label">Notes</label>
+                                <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Additional notes or observations..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <div>
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-info me-2">
+                                    <i class="fas fa-eye me-1"></i>Details
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Update Lab Result
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Load lab parameters when lab test is selected
+        function loadLabParameters(labTestId) {
+            const parameterSelect = document.getElementById('labParameterSelect');
+            const currentParameterId = @Model.LabParameterId;
+            
+            // Clear existing options
+            parameterSelect.innerHTML = '<option value="">Loading...</option>';
+            
+            if (!labTestId) {
+                parameterSelect.innerHTML = '<option value="">Select a parameter...</option>';
+                return;
+            }
+
+            // Fetch parameters
+            fetch(`@Url.Action("GetLabParameters", "LabResult")?labTestId=${labTestId}`)
+                .then(response => response.json())
+                .then(data => {
+                    parameterSelect.innerHTML = '<option value="">Select a parameter...</option>';
+                    
+                    data.forEach(parameter => {
+                        const option = document.createElement('option');
+                        option.value = parameter.id;
+                        option.textContent = `${parameter.name} ${parameter.unit ? '(' + parameter.unit + ')' : ''}`;
+                        
+                        // Keep current selection if it matches
+                        if (parameter.id === currentParameterId) {
+                            option.selected = true;
+                        }
+                        
+                        parameterSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading parameters:', error);
+                    parameterSelect.innerHTML = '<option value="">Error loading parameters</option>';
+                });
+        }
+
+        // Load parameters on page load if lab test is already selected
+        document.addEventListener('DOMContentLoaded', function() {
+            const labTestSelect = document.querySelector('[name="LabTestId"]');
+            if (labTestSelect && labTestSelect.value) {
+                loadLabParameters(labTestSelect.value);
+            }
+        });
+    </script>
+} 
