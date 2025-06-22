@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj": {}
+    "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj": {}
   },
   "projects": {
-    "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj": {
+    "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
+        "projectUniqueName": "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
         "projectName": "BedAutomation",
-        "projectPath": "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
+        "projectPath": "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
         "packagesPath": "C:\\Users\\SeyhanK\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\obj\\",
+        "outputPath": "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

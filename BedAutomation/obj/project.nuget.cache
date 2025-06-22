@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IjEZe7NLWu8=",
+  "dgSpecHash": "gm4QhcNDm0g=",
   "success": true,
-  "projectFilePath": "C:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
+  "projectFilePath": "c:\\Users\\SeyhanK\\Desktop\\BedAutomation\\BedAutomation\\BedAutomation.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\SeyhanK\\.nuget\\packages\\humanizer\\2.14.1\\humanizer.2.14.1.nupkg.sha512",
     "C:\\Users\\SeyhanK\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
