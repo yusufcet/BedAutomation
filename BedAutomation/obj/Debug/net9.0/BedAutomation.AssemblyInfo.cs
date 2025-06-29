@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BedAutomation")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4695096e779a4a1cef0e9d3edf7b83c9e7cc579d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4cbec24718c370ff6e6e254f6364cd8d8516bf3a")]
 [assembly: System.Reflection.AssemblyProductAttribute("BedAutomation")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BedAutomation")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

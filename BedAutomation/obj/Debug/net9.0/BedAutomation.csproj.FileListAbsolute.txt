@@ -384,3 +384,4 @@ C:\Users\SeyhanK\Desktop\BedAutomation\BedAutomation\bin\Debug\net9.0\ru\Microso
 C:\Users\SeyhanK\Desktop\BedAutomation\BedAutomation\bin\Debug\net9.0\tr\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\SeyhanK\Desktop\BedAutomation\BedAutomation\bin\Debug\net9.0\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\Users\SeyhanK\Desktop\BedAutomation\BedAutomation\bin\Debug\net9.0\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
+C:\Users\SeyhanK\Desktop\BedAutomation\BedAutomation\obj\Debug\net9.0\BedAutomation.sourcelink.json
